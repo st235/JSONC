@@ -27,7 +27,7 @@ void JsonMinifier::visitNumber(const JsonNumber* node) {
 }
 
 void JsonMinifier::visitString(const JsonString* node) {
-    _stream << node->value();
+    _stream << '\"' << node->value() << '\"';
 }
 
 void JsonMinifier::visitObject(const JsonObject* node) {

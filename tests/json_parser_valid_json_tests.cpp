@@ -23,7 +23,9 @@ INSTANTIATE_TEST_SUITE_P(
         ValidJsonTests,
         ValidJsonTestingFixture,
         ::testing::Values(
-            std::make_pair("\n \t    true   \t", "true")
+            std::make_pair("\n \t    true   \t", "true"),
+            std::make_pair("[5, true]", "[5,true]"),
+            std::make_pair("{  \"a\":  \"hello world!\"}", "{\"a\":\"hello world!\"}")
         )
 );
 

@@ -5,9 +5,7 @@ namespace json {
 
 class JsonObject {
   public:
-    static int get() {
-        return 5;
-    }
+    JsonObject();
 };
 
 }

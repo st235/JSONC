@@ -9,6 +9,7 @@ project(JSONC VERSION 0.1 DESCRIPTION "Lightweight JSON implementation in C++")
 
 add_library(jsonc
     src/json_object.cpp
+    src/json_token_reader.h
 )
 
 target_include_directories(jsonc PUBLIC ${CMAKE_CURRENT_LIST_DIR}/include)
@@ -28,11 +29,13 @@ FetchContent_MakeAvailable(googletest)
 enable_testing()
 
 add_executable(jsonc_tests
+  tests/json_token_reader_tests.cpp
   tests/json_object_tests.cpp
 )
 
 target_link_libraries(jsonc_tests jsonc)
 target_link_libraries(jsonc_tests GTest::gtest_main)
+target_include_directories(jsonc_tests PRIVATE ${CMAKE_CURRENT_LIST_DIR}/src)
 
 include(GoogleTest)
 gtest_discover_tests(jsonc_tests)

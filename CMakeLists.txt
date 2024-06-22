@@ -9,7 +9,10 @@ project(JSONC VERSION 0.1 DESCRIPTION "Lightweight JSON implementation in C++")
 
 add_library(jsonc
     src/json_object.cpp
+    src/json_parser.h
+    src/json_parser.cpp
     src/json_token_reader.h
+    src/json_null.cpp
 )
 
 target_include_directories(jsonc PUBLIC ${CMAKE_CURRENT_LIST_DIR}/include)
@@ -30,7 +33,10 @@ enable_testing()
 
 add_executable(jsonc_tests
   tests/json_token_reader_tests.cpp
+  tests/json_array_tests.cpp
+  tests/json_boolean_tests.cpp
   tests/json_object_tests.cpp
+  tests/json_parser_tests.cpp
 )
 
 target_link_libraries(jsonc_tests jsonc)

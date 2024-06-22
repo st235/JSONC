@@ -46,21 +46,39 @@ class JsonTokenReader {
         return *this;
     }
 
+    inline size_t save() const {
+        return _index;
+    }
+
+    void restore(size_t token) {
+        _index = token;
+    }
+
     inline bool hasNext() const {
         return _index < _raw_json.length();
     }
 
-    inline bool next() {
+    char next() {
+        char c = peek();
+        _index = _index + 1;
+        return c;
+    }
+
+    bool consume(char c) {
         if (!hasNext()) {
             return false;
         }
 
-        _index = _index + 1;
-        return true;
+        if (peek() == c) {
+            next();
+            return true;
+        }
+
+        return false;
     }
 
-    inline char peek() const {
-        if (_index == _raw_json.length()) {
+    char peek() const {
+        if (!hasNext()) {
             return TOKEN_EOF;
         }
 

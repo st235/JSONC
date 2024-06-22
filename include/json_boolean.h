@@ -23,6 +23,18 @@ class JsonBoolean: public JsonPrimitive<bool> {
         return *this;
     }
 
+    bool operator==(const JsonValue& that) const {
+        if (!that.isBoolean()) {
+            return false;
+        }
+
+        return _primitive == static_cast<const JsonBoolean*>(&that)->_primitive;
+    }
+
+    bool operator!=(const JsonValue& that) const {
+        return !operator==(that);
+    }
+
     virtual bool isBoolean() const override {
         return true;
     }

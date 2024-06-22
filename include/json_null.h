@@ -24,6 +24,10 @@ class JsonNull: public JsonValue {
         return true;
     }
 
+    virtual void accept(JsonVisitor* visitor) override {
+        visitor->visitNull(this);
+    }
+
     virtual ~JsonNull() override = default;
 };
 

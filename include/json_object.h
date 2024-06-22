@@ -3,6 +3,7 @@
 
 #include <string>
 #include <unordered_map>
+#include <unordered_set>
 
 #include "json_value.h"
 
@@ -20,8 +21,26 @@ class JsonObject: public JsonValue {
         _values[key] = value;
     }
 
-    JsonValue* get(const std::string& key) {
-        return _values[key];
+    JsonValue* get(const std::string& key) const {
+        return _values.at(key);
+    }
+
+    std::unordered_set<std::string> keys() const {
+        std::unordered_set<std::string> keys;
+
+        for (const auto& pair: _values) {
+            keys.insert(pair.first);
+        }
+
+        return keys;
+    }
+
+    inline size_t size() const {
+        return _values.size();
+    }
+
+    virtual void accept(JsonVisitor* visitor) override {
+        visitor->visitObject(this);
     }
 
     virtual ~JsonObject() override {

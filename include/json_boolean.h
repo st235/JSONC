@@ -39,6 +39,10 @@ class JsonBoolean: public JsonPrimitive<bool> {
         return true;
     }
 
+    virtual void accept(JsonVisitor* visitor) override {
+        visitor->visitBoolean(this);
+    }
+
     virtual ~JsonBoolean() override = default;
 };
 

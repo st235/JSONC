@@ -39,12 +39,16 @@ class JsonArray: public JsonValue {
         _vector.push_back(value);
     }
 
-    JsonValue* get(size_t index) {
+    JsonValue* get(size_t index) const {
         return _vector[index];
     }
 
-    inline size_t size() {
+    inline size_t size() const {
         return _vector.size();
+    }
+
+    virtual void accept(JsonVisitor* visitor) override {
+        visitor->visitArray(this);
     }
 
     virtual ~JsonArray() override {

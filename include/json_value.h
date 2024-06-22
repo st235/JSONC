@@ -1,6 +1,8 @@
 #ifndef __JSONC_JSON_VALUE_H__
 #define __JSONC_JSON_VALUE_H__
 
+#include "json_visitor.h"
+
 namespace json {
 
 class JsonValue {
@@ -28,6 +30,8 @@ class JsonValue {
     virtual bool isString() const {
         return false;
     }
+
+    virtual void accept(JsonVisitor* visitor) = 0;
 
     virtual ~JsonValue() {}
 };

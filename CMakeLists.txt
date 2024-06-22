@@ -13,6 +13,7 @@ add_library(jsonc
     src/json_parser.cpp
     src/json_token_reader.h
     src/json_null.cpp
+    src/json_minifier.cpp
 )
 
 target_include_directories(jsonc PUBLIC ${CMAKE_CURRENT_LIST_DIR}/include)
@@ -36,7 +37,8 @@ add_executable(jsonc_tests
   tests/json_array_tests.cpp
   tests/json_boolean_tests.cpp
   tests/json_object_tests.cpp
-  tests/json_parser_tests.cpp
+  tests/json_parser_malformed_json_tests.cpp
+  tests/json_parser_valid_json_tests.cpp
 )
 
 target_link_libraries(jsonc_tests jsonc)

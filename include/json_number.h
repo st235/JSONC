@@ -39,6 +39,10 @@ class JsonNumber: public JsonPrimitive<double> {
         return true;
     }
 
+    virtual void accept(JsonVisitor* visitor) override {
+        visitor->visitNumber(this);
+    }
+
     virtual ~JsonNumber() override = default;
 };
 

@@ -29,6 +29,10 @@ class JsonString: public JsonPrimitive<std::string> {
         return true;
     }
 
+    virtual void accept(JsonVisitor* visitor) override {
+        visitor->visitString(this);
+    }
+
     virtual ~JsonString() override = default;
 };
 

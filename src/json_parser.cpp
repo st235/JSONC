@@ -346,6 +346,7 @@ JsonNull* JsonParser::null(JsonTokenReader& reader) {
         return JsonNull::VALUE;
     } else {
         reader.restore(token);
+        return nullptr;
     }
 }
 

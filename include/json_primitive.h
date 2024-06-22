@@ -37,7 +37,7 @@ class JsonPrimitive: public JsonValue {
         return *this;
     }
 
-    inline const T& value() {
+    inline const T& value() const {
         return _primitive;
     }
 

@@ -6,6 +6,42 @@ It is an ideal candidate to use with microcontrollers. The library was tested wi
 
 `JSON` + `C++` = ❤️
 
+## Add dependency
+
+### CMake
+
+`CMake` provides a convenient way to depend on the library.
+
+```cmake
+include(FetchContent)
+
+FetchContent_Declare(
+  JSONC
+  GIT_REPOSITORY git@github.com:st235/JSONC.git
+  GIT_TAG "main"
+  GIT_SHALLOW TRUE
+  GIT_PROGRESS ON
+)
+FetchContent_MakeAvailable(JSONC)
+
+target_link_libraries(your-project-target jsonc)
+```
+
+See more in [`sample`](./sample/)
+
+## Exploring the API
+
+### Create Json Object
+
+```cpp
+#include "json.h"
+
+...
+
+const auto& json_value = json::FromJson(json_string);
+```
+
+
 ## Json Grammar Rules
 
 The specification of JSON format is available at [_the oficial website_](https://www.json.org/json-en.html) or as [_ECMA-404 The JSON Data Interchange Standard_](https://ecma-international.org/publications-and-standards/standards/ecma-404/).

@@ -5,23 +5,24 @@
 
 namespace json {
 
-class JsonNull: public JsonValue {
+class JsonNull final: public JsonValue {
   public:
-    static JsonNull* VALUE;
-
-  private:
-    explicit JsonNull() {}
+    explicit JsonNull() noexcept {}
     
-    // copy constructors
-    JsonNull(const JsonNull& that) = delete;
-    JsonNull& operator=(const JsonNull& that) = delete;
+    // Copy constructors.
+    JsonNull(const JsonNull& that) = default;
+    JsonNull& operator=(const JsonNull& that) = default;
 
-    // move constructors
-    JsonNull(JsonNull&& that) = delete;
-    JsonNull& operator=(JsonNull&& that) = delete;
+    // Move constructors.
+    JsonNull(JsonNull&& that) = default;
+    JsonNull& operator=(JsonNull&& that) = default;
 
     virtual bool isNull() const override {
         return true;
+    }
+
+    virtual JsonValue* clone() const override {
+      return new JsonNull(*this);
     }
 
     virtual void accept(JsonVisitor* visitor) override {
@@ -29,6 +30,12 @@ class JsonNull: public JsonValue {
     }
 
     virtual ~JsonNull() override = default;
+
+  protected:
+    virtual bool isEqual(const JsonValue& that) const override {
+      // All nulls are equal to each other.
+      return that.isNull();
+    }
 };
 
 } // namespace json

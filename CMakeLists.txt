@@ -12,7 +12,6 @@ add_library(jsonc
     src/json_parser.h
     src/json_parser.cpp
     src/json_token_reader.h
-    src/json_null.cpp
     src/json_minifier.cpp
     src/json_beautifier.cpp
     src/json.cpp

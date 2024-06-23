@@ -5,38 +5,30 @@
 
 namespace json {
 
-class JsonBoolean: public JsonPrimitive<bool> {
+class JsonBoolean final: public JsonPrimitive<bool> {
   public:
-    explicit JsonBoolean(bool value): JsonPrimitive(value) {}
+    explicit JsonBoolean(bool value) noexcept: JsonPrimitive(value) {}
     
     // copy constructors
-    JsonBoolean(const JsonBoolean& that): JsonPrimitive(that) {}
-    JsonBoolean& operator=(const JsonBoolean& that) {
+    JsonBoolean(const JsonBoolean& that) noexcept: JsonPrimitive(that) {}
+    JsonBoolean& operator=(const JsonBoolean& that) noexcept {
         JsonPrimitive::operator=(that);
         return *this;
     }
 
     // move constructors
-    JsonBoolean(JsonBoolean&& that): JsonPrimitive(std::move(that)) {}
-    JsonBoolean& operator=(JsonBoolean&& that) {
+    JsonBoolean(JsonBoolean&& that) noexcept: JsonPrimitive(std::move(that)) {}
+    JsonBoolean& operator=(JsonBoolean&& that) noexcept {
         JsonPrimitive::operator=(std::move(that));
         return *this;
     }
 
-    bool operator==(const JsonValue& that) const {
-        if (!that.isBoolean()) {
-            return false;
-        }
-
-        return _primitive == static_cast<const JsonBoolean*>(&that)->_primitive;
-    }
-
-    bool operator!=(const JsonValue& that) const {
-        return !operator==(that);
-    }
-
     virtual bool isBoolean() const override {
         return true;
+    }
+
+    virtual JsonValue* clone() const override {
+      return new JsonBoolean(*this);
     }
 
     virtual void accept(JsonVisitor* visitor) override {

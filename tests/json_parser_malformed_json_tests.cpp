@@ -102,12 +102,16 @@ TEST(JsonParser, NullYieldsValidJson) {
     json::__internal::JsonParser parser;
     json::JsonValue* value = parser.parse("null");
 
-    EXPECT_EQ(json::JsonNull::VALUE, value);
+    EXPECT_EQ(json::JsonNull(), *value);
+
+    delete value;
 }
 
 TEST(JsonParser, NullWithWhitespacesYieldsValidJson) {
     json::__internal::JsonParser parser;
     json::JsonValue* value = parser.parse("\t \n    null \r \t \n");
 
-    EXPECT_EQ(json::JsonNull::VALUE, value);
+    EXPECT_EQ(json::JsonNull(), *value);
+
+    delete value;
 }

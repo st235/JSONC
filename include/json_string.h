@@ -7,26 +7,30 @@
 
 namespace json {
 
-class JsonString: public JsonPrimitive<std::string> {
+class JsonString final: public JsonPrimitive<std::string> {
   public:
-    explicit JsonString(const std::string& value): JsonPrimitive(value) {}
+    explicit JsonString(const std::string& value) noexcept: JsonPrimitive(value) {}
     
     // copy constructors
-    JsonString(const JsonString& that): JsonPrimitive(that) {}
-    JsonString& operator=(const JsonString& that) {
+    JsonString(const JsonString& that) noexcept: JsonPrimitive(that) {}
+    JsonString& operator=(const JsonString& that) noexcept {
         JsonPrimitive::operator=(that);
         return *this;
     }
 
     // move constructors
-    JsonString(JsonString&& that): JsonPrimitive(std::move(that)) {}
-    JsonString& operator=(JsonString&& that) {
+    JsonString(JsonString&& that) noexcept: JsonPrimitive(std::move(that)) {}
+    JsonString& operator=(JsonString&& that) noexcept {
         JsonPrimitive::operator=(std::move(that));
         return *this;
     }
 
     virtual bool isString() const override {
         return true;
+    }
+
+    virtual JsonValue* clone() const override {
+      return new JsonString(*this);
     }
 
     virtual void accept(JsonVisitor* visitor) override {

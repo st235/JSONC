@@ -7,11 +7,15 @@ namespace json {
 
 class JsonValue {
   public:
-    virtual bool isNull() const {
-        return false;
+    bool operator==(const JsonValue& that) const {
+      return typeid(*this) == typeid(that) && isEqual(that);
     }
 
-    virtual bool isArray() const {
+    bool operator!=(const JsonValue& that) const {
+      return !operator==(that);
+    }
+
+    virtual bool isNull() const {
         return false;
     }
 
@@ -23,17 +27,26 @@ class JsonValue {
         return false;
     }
 
-    virtual bool isObject() const {
-        return false;
-    }
-
     virtual bool isString() const {
         return false;
     }
 
+    virtual bool isArray() const {
+        return false;
+    }
+
+    virtual bool isObject() const {
+        return false;
+    }
+
+    virtual JsonValue* clone() const = 0;
+
     virtual void accept(JsonVisitor* visitor) = 0;
 
     virtual ~JsonValue() {}
+
+  protected:
+    virtual bool isEqual(const JsonValue& that) const = 0;
 };
 
 } // namespace json

@@ -5,38 +5,30 @@
 
 namespace json {
 
-class JsonNumber: public JsonPrimitive<double> {
+class JsonNumber final: public JsonPrimitive<double> {
   public:
-    explicit JsonNumber(double value): JsonPrimitive(value) {}
+    explicit JsonNumber(double value) noexcept: JsonPrimitive(value) {}
     
     // copy constructors
-    JsonNumber(const JsonNumber& that): JsonPrimitive(that) {}
+    JsonNumber(const JsonNumber& that) noexcept: JsonPrimitive(that) {}
     JsonNumber& operator=(const JsonNumber& that) {
         JsonPrimitive<double>::operator=(that);
         return *this;
     }
 
     // move constructors
-    JsonNumber(JsonNumber&& that): JsonPrimitive(std::move(that)) {}
-    JsonNumber& operator=(JsonNumber&& that) {
+    JsonNumber(JsonNumber&& that) noexcept: JsonPrimitive(std::move(that)) {}
+    JsonNumber& operator=(JsonNumber&& that) noexcept {
         JsonPrimitive<double>::operator=(std::move(that));
         return *this;
     }
 
-    bool operator==(const JsonValue& that) const {
-        if (!that.isNumber()) {
-            return false;
-        }
-
-        return _primitive == static_cast<const JsonNumber*>(&that)->_primitive;
-    }
-
-    bool operator!=(const JsonValue& that) const {
-        return !operator==(that);
-    }
-
     virtual bool isNumber() const override {
         return true;
+    }
+
+    virtual JsonValue* clone() const override {
+      return new JsonNumber(*this);
     }
 
     virtual void accept(JsonVisitor* visitor) override {

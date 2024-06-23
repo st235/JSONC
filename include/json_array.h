@@ -7,25 +7,42 @@
 
 namespace json {
 
-class JsonArray: public JsonValue {
+class JsonArray final: public JsonValue {
   public:
-    JsonArray():
-        _vector() {
+    JsonArray() noexcept: _items() {
         // Empty on purpose.
     }
 
-    explicit JsonArray(const std::vector<JsonValue*> values):
-        _vector(values) {
+    explicit JsonArray(const std::vector<JsonValue*> values) noexcept:
+        _items(values) {
         // Empty on purpose.
     }
 
-    JsonArray(JsonArray&& that):
-        _vector(std::move(that._vector)) {
+    // Copy constructors.
+    JsonArray(const JsonArray& that) noexcept: _items() {
+        for (const auto* item: that._items) {
+            this->_items.push_back(item->clone());
+        }
     }
 
-    JsonArray& operator=(JsonArray&& that) {
+    JsonArray& operator=(const JsonArray& that) noexcept {
         if (this != &that) {
-            this->_vector = std::move(that._vector);
+            this->_items.clear();
+            for (const auto* item: that._items) {
+                this->_items.push_back(item->clone());
+            }
+        }
+
+        return *this;
+    }
+
+    // Move constructors.
+    JsonArray(JsonArray&& that) noexcept: _items(std::move(that._items)) {
+    }
+
+    JsonArray& operator=(JsonArray&& that) noexcept {
+        if (this != &that) {
+            this->_items = std::move(that._items);
         }
 
         return *this;
@@ -36,15 +53,19 @@ class JsonArray: public JsonValue {
     }
 
     void add(JsonValue* value) {
-        _vector.push_back(value);
+        _items.push_back(value);
     }
 
     JsonValue* get(size_t index) const {
-        return _vector[index];
+        return _items[index];
     }
 
     inline size_t size() const {
-        return _vector.size();
+        return _items.size();
+    }
+
+    virtual JsonValue* clone() const override {
+      return new JsonArray(*this);
     }
 
     virtual void accept(JsonVisitor* visitor) override {
@@ -52,16 +73,30 @@ class JsonArray: public JsonValue {
     }
 
     virtual ~JsonArray() override {
-        for (auto* value: _vector) {
+        for (const auto* value: _items) {
             delete value;
         }
     }
 
-  private:
-    JsonArray(const JsonArray& that) = delete;
-    JsonArray& operator=(const JsonArray& that) = delete;
+  protected:
+    virtual bool isEqual(const JsonValue& that) const override {
+      const auto& that_array = static_cast<const JsonArray&>(that);
 
-    std::vector<JsonValue*> _vector;
+      if (this->size() != that_array.size()) {
+        return false;
+      }
+
+      for (size_t i = 0; i < this->size(); i++) {
+        if (*(this->get(i)) != *(that_array.get(i))) {
+            return false;
+        }
+      }
+
+      return true;
+    }
+
+  private:
+    std::vector<JsonValue*> _items;
 };
 
 } // namespace json

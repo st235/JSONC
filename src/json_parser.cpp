@@ -343,7 +343,7 @@ JsonNull* JsonParser::null(JsonTokenReader& reader) {
     auto token = reader.save();
 
     if (reader.consume('n') && reader.consume('u') && reader.consume('l') && reader.consume('l')) {
-        return JsonNull::VALUE;
+        return new JsonNull();
     } else {
         reader.restore(token);
         return nullptr;

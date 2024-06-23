@@ -4,6 +4,6 @@
 
 To run tests
 
-```
-ctest
+```bash
+ctest --output-on-failure
 ```

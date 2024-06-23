@@ -6,10 +6,7 @@
 
 #include "json.h"
 
-class ValidJsonTestingFixture: public ::testing::TestWithParam<std::pair<std::string, std::string>> {
-protected:
-    json::__internal::JsonParser parser;
-};
+class ValidJsonTestingFixture: public ::testing::TestWithParam<std::pair<std::string, std::string>> {};
 
 INSTANTIATE_TEST_SUITE_P(
         ValidJsonTests,

@@ -1,6 +1,7 @@
 #include "json_parser.h"
 
 #include <sstream>
+#include <iostream>
 
 #include "json_token_reader.h"
 
@@ -13,6 +14,12 @@
 #include "json_null.h"
 
 namespace {
+
+std::string UnwrapString(const std::string* string_ptr) {
+    std::string result(*string_ptr);
+    delete string_ptr;
+    return std::move(result);
+}
 
 bool IsEscapeCharacter(char c) {
     return (c == '\"') || (c == '\\') || (c == '/') ||
@@ -68,11 +75,8 @@ JsonObject* JsonParser::object(JsonTokenReader& reader) {
 
     whitespace(reader);
 
-    JsonString* key = string(reader);
+    std::string* key = raw_string(reader);
     if (key) {
-        std::string raw_key(key->value());
-        delete key;
-
         whitespace(reader);
 
         if (!reader.consume(':')) {
@@ -88,18 +92,16 @@ JsonObject* JsonParser::object(JsonTokenReader& reader) {
             return nullptr;
         }
 
-        object->put(raw_key, value);
+        // UnwrapString deletes original key pointer.
+        object->put(UnwrapString(key), value);
 
         while (reader.consume(',')) {
-            JsonString* key = string(reader);
+            std::string* key = raw_string(reader);
             if (!key) {
                 delete object;
                 reader.restore(token);
                 return nullptr;
             }
-
-            std::string raw_key(key->value());
-            delete key;
 
             whitespace(reader);
 
@@ -116,7 +118,8 @@ JsonObject* JsonParser::object(JsonTokenReader& reader) {
                 return nullptr;
             }
 
-            object->put(raw_key, value);
+            // UnwrapString deletes original key pointer.
+            object->put(UnwrapString(key), value);
         }
     }
 
@@ -208,54 +211,32 @@ JsonValue* JsonParser::value(JsonTokenReader& reader) {
 }
 
 // primitives
-JsonString* JsonParser::string(JsonTokenReader& reader) {
+JsonNull* JsonParser::null(JsonTokenReader& reader) {
     auto token = reader.save();
 
-    if (!reader.consume('\"')) {
+    if (reader.consume('n') && reader.consume('u') && reader.consume('l') && reader.consume('l')) {
+        return new JsonNull();
+    } else {
+        reader.restore(token);
         return nullptr;
     }
+}
 
-    std::stringstream sstream;
+JsonBoolean* JsonParser::boolean(JsonTokenReader& reader) {
+    auto token = reader.save();
 
-    while (reader.hasNext() && reader.peek() != '\"') {
-        char c = reader.next();
-        sstream << c;
-
-        if (c == '\\') {
-            // Control character flow.
-
-            if (!reader.hasNext()) {
-                reader.restore(token);
-                return nullptr;
-            }
-
-            char control_character = reader.next();
-            sstream << control_character;
-
-            if (control_character == 'u') {
-                // 4 hex digits should follow
-
-                for (size_t i = 0; i < 4; i++) {
-                    if (!reader.hasNext() || !IsHexaDecimal(reader.peek())) {
-                        reader.restore(token);
-                        return nullptr;
-                    }
-
-                    sstream << reader.next();
-                }
-            } else if (!IsEscapeCharacter(control_character)) {
-                // Neither a control character nor hexadecimal number.
-                reader.restore(token);
-                return nullptr;
-            }
-        }
+    if (reader.consume('t') && reader.consume('r') && reader.consume('u') && reader.consume('e')) {
+        return new JsonBoolean(true);
+    } else {
+        reader.restore(token);
     }
 
-    if (reader.consume('\"')) {
-        return new JsonString(sstream.str());
+    if (reader.consume('f') && reader.consume('a') && reader.consume('l') && reader.consume('s') && reader.consume('e')) {
+        return new JsonBoolean(false);
+    } else {
+        reader.restore(token);
     }
 
-    reader.restore(token);
     return nullptr;
 }
 
@@ -321,36 +302,70 @@ JsonNumber* JsonParser::number(JsonTokenReader& reader) {
     return new JsonNumber(std::stod(sstream.str()));
 }
 
-JsonBoolean* JsonParser::boolean(JsonTokenReader& reader) {
-    auto token = reader.save();
-
-    if (reader.consume('t') && reader.consume('r') && reader.consume('u') && reader.consume('e')) {
-        return new JsonBoolean(true);
-    } else {
-        reader.restore(token);
-    }
-
-    if (reader.consume('f') && reader.consume('a') && reader.consume('l') && reader.consume('s') && reader.consume('e')) {
-        return new JsonBoolean(false);
-    } else {
-        reader.restore(token);
-    }
-
-    return nullptr;
-}
-
-JsonNull* JsonParser::null(JsonTokenReader& reader) {
-    auto token = reader.save();
-
-    if (reader.consume('n') && reader.consume('u') && reader.consume('l') && reader.consume('l')) {
-        return new JsonNull();
-    } else {
-        reader.restore(token);
+JsonString* JsonParser::string(JsonTokenReader& reader) {
+    const std::string* raw_string = this->raw_string(reader);
+    if (!raw_string) {
         return nullptr;
     }
+
+    JsonString* json_string = new JsonString(*raw_string);
+    delete raw_string;
+
+    return json_string;
 }
 
 // misc
+std::string* JsonParser::raw_string(JsonTokenReader& reader) {
+    auto token = reader.save();
+
+    if (!reader.consume('\"')) {
+        return nullptr;
+    }
+
+    std::stringstream sstream;
+
+    while (reader.hasNext() && reader.peek() != '\"') {
+        char c = reader.next();
+        sstream << c;
+
+        if (c == '\\') {
+            // Control character flow.
+
+            if (!reader.hasNext()) {
+                reader.restore(token);
+                return nullptr;
+            }
+
+            char control_character = reader.next();
+            sstream << control_character;
+
+            if (control_character == 'u') {
+                // 4 hex digits should follow
+
+                for (size_t i = 0; i < 4; i++) {
+                    if (!reader.hasNext() || !IsHexaDecimal(reader.peek())) {
+                        reader.restore(token);
+                        return nullptr;
+                    }
+
+                    sstream << reader.next();
+                }
+            } else if (!IsEscapeCharacter(control_character)) {
+                // Neither a control character nor hexadecimal number.
+                reader.restore(token);
+                return nullptr;
+            }
+        }
+    }
+
+    if (reader.consume('\"')) {
+        return new std::string(sstream.str());
+    }
+
+    reader.restore(token);
+    return nullptr;
+}
+
 void JsonParser::whitespace(JsonTokenReader& reader) {
     // In terms of JSON specification
     // spaces are: space, linefeed (aka new line),

@@ -31,20 +31,21 @@ class JsonParser {
      * to https://www.json.org/json-en.html
      **/
 
-    // base
+    // Base.
     JsonValue* value(JsonTokenReader& reader);
     
-    // objects
+    // Objects.
     JsonObject* object(JsonTokenReader& reader);
     JsonArray* array(JsonTokenReader& reader);
 
-    // primitives
-    JsonString* string(JsonTokenReader& reader);
-    JsonNumber* number(JsonTokenReader& reader);
-    JsonBoolean* boolean(JsonTokenReader& reader);
+    // Primitives.
     JsonNull* null(JsonTokenReader& reader);
+    JsonBoolean* boolean(JsonTokenReader& reader);
+    JsonNumber* number(JsonTokenReader& reader);
+    JsonString* string(JsonTokenReader& reader);
 
-    // misc
+    // Misc.
+    std::string* raw_string(JsonTokenReader& reader);
     void whitespace(JsonTokenReader& reader);
 };
 

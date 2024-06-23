@@ -1,6 +1,6 @@
 # JSONC
 
-`JSONC` is a lightweight implementation of `JSON` Data Interchance Standard for `C++` programming language.
+`JSONC` is a lightweight implementation of `JSON` Data Interchange Standard for `C++` programming language.
 
 It is an ideal candidate to use with microcontrollers. The library was tested with [`Raspberry Pi Pico and Pico W`](https://www.raspberrypi.com/documentation/microcontrollers/raspberry-pi-pico.html).
 

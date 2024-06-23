@@ -1,6 +1,8 @@
 #ifndef __JSONC_JSON_VALUE_H__
 #define __JSONC_JSON_VALUE_H__
 
+#include <typeinfo>
+
 #include "json_visitor.h"
 
 namespace json {

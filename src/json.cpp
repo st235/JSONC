@@ -12,8 +12,7 @@ std::unique_ptr<JsonValue> FromJson(const std::string& json) {
 
 std::string ToJson(JsonValue* json) {
     JsonMinifier minifier;
-    json->accept(&minifier);
-    return minifier.minifiedJson();
+    return minifier.minify(json);
 }
 
 } // namespace json

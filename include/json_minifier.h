@@ -7,12 +7,16 @@
 
 namespace json {
 
+class JsonValue;
+
 class JsonMinifier: public JsonVisitor {
   public:
     JsonMinifier():
         _stream() {
         // Empty on purpose.
     }
+
+    std::string minify(JsonValue* json);
 
     virtual void visitNull(const JsonNull* node) override;
     virtual void visitBoolean(const JsonBoolean* node) override;
@@ -21,6 +25,8 @@ class JsonMinifier: public JsonVisitor {
     virtual void visitObject(const JsonObject* node) override;
     virtual void visitArray(const JsonArray* node) override;
 
+    virtual ~JsonMinifier() = default;
+  private:
     void reset() {
         _stream.str(std::string());
         _stream.clear();
@@ -30,8 +36,6 @@ class JsonMinifier: public JsonVisitor {
         return _stream.str();
     }
 
-    virtual ~JsonMinifier() = default;
-  private:
     std::stringstream _stream;
 };
 

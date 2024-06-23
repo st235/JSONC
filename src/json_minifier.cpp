@@ -10,6 +10,13 @@
 
 namespace json {
 
+std::string JsonMinifier::minify(JsonValue* json) {
+    json->accept(this);
+    const auto& minified_json = minifiedJson();
+    reset();
+    return minified_json;
+}
+
 void JsonMinifier::visitNull(const JsonNull* node) {
     _stream << "null";
 }

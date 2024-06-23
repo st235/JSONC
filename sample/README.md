@@ -19,9 +19,11 @@ make
 
 You should see something similar to the output below
 
-```json
+```bash
 $ ./json-beautifier ../json_example.json
+```
 
+```json
 [
 	{
 		"_id": "667808619dc80527e5d96754",

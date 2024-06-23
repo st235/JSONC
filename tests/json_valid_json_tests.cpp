@@ -1,18 +1,10 @@
 #include <gtest/gtest.h>
 
 #include <string>
+#include <memory>
 #include <utility>
 
-#include "json_parser.h"
-#include "json_minifier.h"
-
-#include "json_array.h"
-#include "json_boolean.h"
-#include "json_number.h"
-#include "json_object.h"
-#include "json_string.h"
-#include "json_value.h"
-#include "json_null.h"
+#include "json.h"
 
 class ValidJsonTestingFixture: public ::testing::TestWithParam<std::pair<std::string, std::string>> {
 protected:
@@ -62,15 +54,13 @@ INSTANTIATE_TEST_SUITE_P(
 );
 
 TEST_P(ValidJsonTestingFixture, ValidJsonYieldsCorrectMinification) {
-    json::JsonMinifier minifier;
     const auto& pair = GetParam();
 
     const auto& json = pair.first;
     const auto& expected_json = pair.second;
 
-    json::JsonValue* value = parser.parse(json);
-    value->accept(&minifier);
-    delete value;
+    std::unique_ptr<json::JsonValue> json_value = json::FromJson(json);
+    std::string minified_json = json::ToJson(json_value.get());
 
-    EXPECT_EQ(expected_json, minifier.minifiedJson());
+    EXPECT_EQ(expected_json, minified_json);
 }

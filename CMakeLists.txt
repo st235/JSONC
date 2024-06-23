@@ -38,7 +38,7 @@ add_executable(jsonc_tests
   tests/json_boolean_tests.cpp
   tests/json_object_tests.cpp
   tests/json_parser_malformed_json_tests.cpp
-  tests/json_parser_valid_json_tests.cpp
+  tests/json_valid_json_tests.cpp
 )
 
 target_link_libraries(jsonc_tests jsonc)

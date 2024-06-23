@@ -10,6 +10,13 @@
 
 namespace json {
 
+std::string JsonBeautifier::beautify(JsonValue* json) {
+    json->accept(this);
+    const auto& beautified_json = beautifiedJson();
+    reset();
+    return beautified_json;
+}
+
 void JsonBeautifier::visitNull(const JsonNull* node) {
     _stream << "null";
 }

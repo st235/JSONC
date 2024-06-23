@@ -32,8 +32,7 @@ TEST_P(BeautifyJsonTestingFixture, ValidJsonYieldsBeautifiedString) {
 
     json::JsonBeautifier beautifier;
     std::unique_ptr<json::JsonValue> json_value = json::FromJson(json);
-    json_value->accept(&beautifier);
-    std::string beautified_json = beautifier.beautifiedJson();
+    std::string beautified_json = beautifier.beautify(json_value.get());
 
     EXPECT_EQ(expected_json, beautified_json);
 }

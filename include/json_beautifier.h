@@ -8,6 +8,8 @@
 
 namespace json {
 
+class JsonValue;
+
 class JsonBeautifier: public JsonVisitor {
   public:
     JsonBeautifier(uint8_t spacing = 1,
@@ -31,6 +33,8 @@ class JsonBeautifier: public JsonVisitor {
         _stream.str(std::string());
         _stream.clear();
     }
+
+    std::string beautify(JsonValue* json);
 
     inline std::string beautifiedJson() const {
         return _stream.str();

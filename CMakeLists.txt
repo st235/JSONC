@@ -8,7 +8,6 @@ project(JSONC VERSION 0.1 DESCRIPTION "Lightweight JSON implementation in C++")
 # Library targets
 
 add_library(jsonc
-    src/json_object.cpp
     src/json_parser.h
     src/json_parser.cpp
     src/json_token_reader.h

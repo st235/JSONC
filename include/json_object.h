@@ -9,6 +9,8 @@
 
 namespace json {
 
+typedef JsonValue* JsonValuePtr;
+
 class JsonObject final: public JsonValue {
   public:
     JsonObject() noexcept: _items() {
@@ -45,8 +47,16 @@ class JsonObject final: public JsonValue {
         return *this;
     }
 
+    JsonValuePtr& operator[](const std::string& key) {
+        return _items[key];
+    }
+
+    const JsonValuePtr& operator[](const std::string& key) const {
+        return get(key);
+    }
+
     void put(const std::string& key,
-             JsonValue* value) {
+             JsonValuePtr value) {
         _items[key] = value;
     }
 
@@ -54,7 +64,7 @@ class JsonObject final: public JsonValue {
         return _items.find(key) != _items.end();
     }
 
-    JsonValue* get(const std::string& key) const {
+    inline const JsonValuePtr& get(const std::string& key) const {
         return _items.at(key);
     }
 
@@ -72,7 +82,7 @@ class JsonObject final: public JsonValue {
         return _items.size();
     }
 
-    virtual JsonValue* clone() const override {
+    virtual JsonValuePtr clone() const override {
       return new JsonObject(*this);
     }
 
@@ -111,7 +121,7 @@ class JsonObject final: public JsonValue {
     }
 
   private:
-    std::unordered_map<std::string, JsonValue*> _items;
+    std::unordered_map<std::string, JsonValuePtr> _items;
 };
 
 } // namespace json

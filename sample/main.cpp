@@ -28,8 +28,14 @@ int main(int argc, char *argv[]) {
     const auto& file_context = ReadFile(std::string(argv[1]));
 
     json::JsonBeautifier beautifier;
-    const auto& json = json::FromJson(file_context);
-    const auto& beautified_json = beautifier.beautify(json.get());
+    const auto& json = json::Json::fromJson(file_context);
+
+    if (!json) {
+        std::cout << "Json is not valid!"  << std::endl;
+        return 0;
+    }
+
+    const auto& beautified_json = beautifier.beautify(*json);
 
     std::cout << beautified_json << std::endl;
 

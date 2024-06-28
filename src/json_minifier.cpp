@@ -1,74 +1,67 @@
 #include "json_minifier.h"
 
-#include "json_array.h"
-#include "json_boolean.h"
-#include "json_number.h"
-#include "json_object.h"
-#include "json_string.h"
-#include "json_value.h"
-#include "json_null.h"
+#include "json.h"
 
 namespace json {
 
-std::string JsonMinifier::minify(JsonValue* json) {
-    json->accept(this);
+std::string JsonMinifier::minify(const Json& json) {
+    json.accept(*this);
     const auto& minified_json = minifiedJson();
     reset();
-    return minified_json;
+    return std::move(minified_json);
 }
 
-void JsonMinifier::visitNull(const JsonNull* node) {
+void JsonMinifier::visitNull() {
     _stream << "null";
 }
 
-void JsonMinifier::visitBoolean(const JsonBoolean* node) {
-    if (node->value()) {
+void JsonMinifier::visitBoolean(bool_t node) {
+    if (node) {
         _stream << "true";
     } else {
         _stream << "false";
     }
 }
 
-void JsonMinifier::visitNumber(const JsonNumber* node) {
-    _stream << node->value();
+void JsonMinifier::visitNumber(number_t node) {
+    _stream << node;
 }
 
-void JsonMinifier::visitString(const JsonString* node) {
-    _stream << '\"' << node->value() << '\"';
+void JsonMinifier::visitString(const string_t& node) {
+    _stream << '\"' << node << '\"';
 }
 
-void JsonMinifier::visitObject(const JsonObject* node) {
-    const auto& keys = node->keys();
+void JsonMinifier::visitObject(const object_t& node) {
     _stream << '{';
 
-    size_t iter = 0;
-
-    for (const auto& key: keys) {
-        if (iter > 0) {
+    size_t i = 0;
+    for (const auto& [key, child]: node) {
+        if (i > 0) {
             _stream << ',';
         }
 
         _stream << '\"' << key << '\"' << ':';
 
-        auto* child = node->get(key);
-        child->accept(this);
+        child.accept(*this);
 
-        iter += 1;
+        i += 1;
     }
 
     _stream << '}';
 }
 
-void JsonMinifier::visitArray(const JsonArray* node) {
+void JsonMinifier::visitArray(const array_t& node) {
     _stream << '[';
 
-    for (size_t i = 0; i < node->size(); i++) {
+    size_t i = 0;
+    for (const auto& child: node) {
         if (i > 0) {
             _stream << ',';
         }
 
-        auto* child = node->get(i);
-        child->accept(this);
+        child.accept(*this);
+
+        i += 1;
     }
 
     _stream << ']';

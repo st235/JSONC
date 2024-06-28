@@ -21,14 +21,14 @@ class JsonBeautifier: public JsonVisitor {
         // Empty on purpose.
     }
 
-    std::string beautify(JsonValue* json);
+    std::string beautify(const Json& json);
 
-    virtual void visitNull(const JsonNull* node) override;
-    virtual void visitBoolean(const JsonBoolean* node) override;
-    virtual void visitNumber(const JsonNumber* node) override;
-    virtual void visitString(const JsonString* node) override;
-    virtual void visitObject(const JsonObject* node) override;
-    virtual void visitArray(const JsonArray* node) override;
+    virtual void visitNull() override;
+    virtual void visitBoolean(bool_t node) override;
+    virtual void visitNumber(number_t node) override;
+    virtual void visitString(const string_t& node) override;
+    virtual void visitArray(const array_t& node) override;
+    virtual void visitObject(const object_t& node) override;
 
     virtual ~JsonBeautifier() = default;
   private:
@@ -45,7 +45,7 @@ class JsonBeautifier: public JsonVisitor {
     }
 
     inline std::string beautifiedJson() const {
-        return _stream.str();
+        return std::move(_stream.str());
     }
 
     uint16_t _depth;

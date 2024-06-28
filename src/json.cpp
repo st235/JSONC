@@ -5,14 +5,28 @@
 
 namespace json {
 
-std::unique_ptr<JsonValue> FromJson(const std::string& json) {
-    __internal::JsonParser parser;
-    return std::unique_ptr<JsonValue>{ parser.parse(json) };
+const Json Json::VALUE_NULL = Json();
+
+const Json& Json::null() {
+    return VALUE_NULL;
 }
 
-std::string ToJson(JsonValue* json) {
+Json Json::array() {
+    return std::move(Json(array_t()));
+}
+
+Json Json::object() {
+    return std::move(Json(object_t()));
+}
+
+std::optional<Json> Json::fromJson(const std::string& json) {
+    __internal::JsonParser parser;
+    return std::move(parser.parse(json));
+}
+
+std::string Json::toJson(const Json& json) {
     JsonMinifier minifier;
-    return minifier.minify(json);
+    return std::move(minifier.minify(json));
 }
 
 } // namespace json

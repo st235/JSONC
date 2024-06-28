@@ -3,8 +3,7 @@
 #include <memory>
 #include <unordered_set>
 
-#include "json_object.h"
-#include "json_boolean.h"
+#include "json.h"
 
 namespace {
 
@@ -26,27 +25,27 @@ bool IsEqualSets(const std::unordered_set<T>& one, const std::unordered_set<T>& 
 } // namespace
 
 TEST(JsonObject, EmptyJsonObjectHasSizeZero) {
-    json::JsonObject json_object;
+    json::Json json_object = json::Json::object();
   
     EXPECT_EQ(0, json_object.size());
 }
 
 TEST(JsonObject, JsonObjectWithElementsReturnsNonZeroSize) {
-    json::JsonObject json_object;
+    json::Json json_object = json::Json::object();
 
-    json_object["a"] = new json::JsonBoolean(true);
-    json_object["b"] = new json::JsonBoolean(false);
-    json_object["c"] = new json::JsonBoolean(false);
+    json_object["a"] = json::Json(true);
+    json_object["b"] = json::Json(false);
+    json_object["c"] = json::Json(false);
   
     EXPECT_EQ(3, json_object.size());
 }
 
 TEST(JsonObject, AddingKeyAddsItToJsonObject) {
-    json::JsonObject json_object;
+    json::Json json_object = json::Json::object();
 
-    json_object["a"] = new json::JsonBoolean(true);
-    json_object["b"] = new json::JsonBoolean(false);
+    json_object["a"] = json::Json(true);
+    json_object["b"] = json::Json(false);
 
-    EXPECT_EQ(json::JsonBoolean(true), *(json_object["a"]));
-    EXPECT_EQ(json::JsonBoolean(false), *(json_object["b"]));
+    EXPECT_EQ(json::Json(true), json_object["a"]);
+    EXPECT_EQ(json::Json(false), json_object["b"]);
 }

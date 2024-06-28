@@ -33,6 +33,8 @@ FetchContent_MakeAvailable(googletest)
 enable_testing()
 
 add_executable(jsonc_tests
+  tests/json_null_tests.cpp
+
   tests/json_token_reader_tests.cpp
   tests/json_array_tests.cpp
   tests/json_boolean_tests.cpp
@@ -40,7 +42,6 @@ add_executable(jsonc_tests
   tests/json_parser_malformed_json_tests.cpp
   tests/json_valid_json_tests.cpp
   tests/json_beautifier_tests.cpp
-  tests/nsjon_tests.cpp
 )
 
 target_link_libraries(jsonc_tests jsonc)

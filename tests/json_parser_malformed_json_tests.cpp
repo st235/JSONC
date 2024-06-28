@@ -44,23 +44,23 @@ INSTANTIATE_TEST_SUITE_P(
             "-5e",
             "4E+",
             "1.23E",
-            "-8.11e-"
+            "-8.11e-",
 
             // strings with issues:
             // no brackets
             "hello world",
             // no matching closing bracket
-            "\"hello world",
-            "hello world\"",
+            R"("hello world)",
+            R"(hello world")",
             // disallowed character after control symbol
-            "\"hello \\z \"",
-            "\" \\a \"",
+            R"("hello \z ")",
+            R"(" \a ")",
             // invalid length of hex number
-            "\"\\u01A\"",
-            "\"\\uF0\"",
+            R"("\u01A")",
+            R"("\uF0")",
             // invalid hex number
-            "\"\\uXAF1\"",
-            "\"number is \\u1Z11\""
+            R"("\uXAF1")",
+            R"("number is \u1Z11")"
 
             // arrays with issues:
             // no closing bracket
@@ -75,15 +75,15 @@ INSTANTIATE_TEST_SUITE_P(
             // no closing bracket
             "{",
             // traling coma
-            "{ \"a\" : 5, }",
-            "{ \"a\" : 5, \"b\": true, }",
+            R"({ "a" : 5, })",
+            R"({ "a" : 5, "b": true, })",
 
             // complex cases:
             // multiple objects without array brackets
             "5, 2, 1, true",
             "{}, {}",
             // unknown keyword
-            "{ \"a\" : hello_world }"
+            R"({ "a" : hello_world })"
         )
 );
 

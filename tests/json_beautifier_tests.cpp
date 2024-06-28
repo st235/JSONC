@@ -7,7 +7,6 @@
 #include "json_beautifier.h"
 
 #include "json.h"
-#include "json_value.h"
 
 class BeautifyJsonTestingFixture: public ::testing::TestWithParam<std::pair<std::string, std::string>> {};
 
@@ -31,8 +30,8 @@ TEST_P(BeautifyJsonTestingFixture, ValidJsonYieldsBeautifiedString) {
     const auto& expected_json = pair.second;
 
     json::JsonBeautifier beautifier;
-    std::unique_ptr<json::JsonValue> json_value = json::FromJson(json);
-    std::string beautified_json = beautifier.beautify(json_value.get());
+    const auto& json_value = json::Json::fromJson(json);
+    const auto& beautified_json = beautifier.beautify(*json_value);
 
     EXPECT_EQ(expected_json, beautified_json);
 }

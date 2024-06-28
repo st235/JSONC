@@ -2,19 +2,12 @@
 #define __JSONC_JSON_PARSER_H__
 
 #include <cstdint>
+#include <optional>
 #include <string>
 
 namespace json {
 
-// Forward declaration of json types.
-class JsonValue;
-
-class JsonArray;
-class JsonBoolean;
-class JsonNumber;
-class JsonObject;
-class JsonString;
-class JsonNull;
+class Json;
 
 namespace __internal {
 
@@ -23,7 +16,7 @@ class JsonTokenReader;
 
 class JsonParser {
   public:
-    JsonValue* parse(const std::string& raw_json);
+    std::optional<Json> parse(const std::string& raw_json);
 
   private:
     /**
@@ -32,20 +25,20 @@ class JsonParser {
      **/
 
     // Base.
-    JsonValue* value(JsonTokenReader& reader);
+    std::optional<Json> value(JsonTokenReader& reader);
     
     // Objects.
-    JsonObject* object(JsonTokenReader& reader);
-    JsonArray* array(JsonTokenReader& reader);
+    std::optional<Json> object(JsonTokenReader& reader);
+    std::optional<Json> array(JsonTokenReader& reader);
 
     // Primitives.
-    JsonNull* null(JsonTokenReader& reader);
-    JsonBoolean* boolean(JsonTokenReader& reader);
-    JsonNumber* number(JsonTokenReader& reader);
-    JsonString* string(JsonTokenReader& reader);
+    std::optional<Json> null(JsonTokenReader& reader);
+    std::optional<Json> boolean(JsonTokenReader& reader);
+    std::optional<Json> number(JsonTokenReader& reader);
+    std::optional<Json> string(JsonTokenReader& reader);
 
     // Misc.
-    std::string* raw_string(JsonTokenReader& reader);
+    std::optional<std::string> raw_string(JsonTokenReader& reader);
     void whitespace(JsonTokenReader& reader);
 };
 

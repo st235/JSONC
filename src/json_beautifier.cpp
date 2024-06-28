@@ -1,61 +1,52 @@
 #include "json_beautifier.h"
 
-#include "json_array.h"
-#include "json_boolean.h"
-#include "json_number.h"
-#include "json_object.h"
-#include "json_string.h"
-#include "json_value.h"
-#include "json_null.h"
+#include "json.h"
 
 namespace json {
 
-std::string JsonBeautifier::beautify(JsonValue* json) {
-    json->accept(this);
+std::string JsonBeautifier::beautify(const Json& json) {
+    json.accept(*this);
     const auto& beautified_json = beautifiedJson();
     reset();
-    return beautified_json;
+    return std::move(beautified_json);
 }
 
-void JsonBeautifier::visitNull(const JsonNull* node) {
+void JsonBeautifier::visitNull() {
     _stream << "null";
 }
 
-void JsonBeautifier::visitBoolean(const JsonBoolean* node) {
-    if (node->value()) {
+void JsonBeautifier::visitBoolean(bool_t node) {
+    if (node) {
         _stream << "true";
     } else {
         _stream << "false";
     }
 }
 
-void JsonBeautifier::visitNumber(const JsonNumber* node) {
-    _stream << node->value();
+void JsonBeautifier::visitNumber(number_t node) {
+    _stream << node;
 }
 
-void JsonBeautifier::visitString(const JsonString* node) {
-    _stream << '\"' << node->value() << '\"';
+void JsonBeautifier::visitString(const string_t& node) {
+    _stream << '\"' << node << '\"';
 }
 
-void JsonBeautifier::visitObject(const JsonObject* node) {
-    const auto& keys = node->keys();
+void JsonBeautifier::visitObject(const object_t& node) {
     _stream << '{' << std::endl;
 
-    size_t iter = 0;
-
-    for (const auto& key: keys) {
+    size_t i = 0;
+    for (const auto& [key, child]: node) {
         _depth += 1;
 
         writeSpacing();
         _stream << '\"' << key << '\"' << ": ";
 
-        auto* child = node->get(key);
-        child->accept(this);
+        child.accept(*this);
 
-        if (iter < (node->size() - 1)) {
+        if (i < (node.size() - 1)) {
             _stream << ',';
         }
-        iter += 1;
+        i += 1;
 
         _stream << std::endl;
 
@@ -66,19 +57,20 @@ void JsonBeautifier::visitObject(const JsonObject* node) {
     _stream << '}';
 }
 
-void JsonBeautifier::visitArray(const JsonArray* node) {
+void JsonBeautifier::visitArray(const array_t& node) {
     _stream << '[' << std::endl;
 
-    for (size_t i = 0; i < node->size(); i++) {
+    size_t i = 0;
+    for (const auto& child: node) {
         _depth += 1;
 
         writeSpacing();
-        auto* child = node->get(i);
-        child->accept(this);
+        child.accept(*this);
 
-        if (i < (node->size() - 1)) {
+        if (i < (node.size() - 1)) {
             _stream << ',';
         }
+        i += 1;
 
         _stream << std::endl;
 

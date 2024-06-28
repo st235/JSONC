@@ -1,18 +1,18 @@
 #include <gtest/gtest.h>
 
-#include "json_boolean.h"
+#include "json.h"
 
-TEST(JsonBoolean, IsBooleanReturnsTrue) {
-    json::JsonBoolean jsonBoolean(false);
-    EXPECT_TRUE(jsonBoolean.isBoolean());
+TEST(JsonBoolean, IsBoolReturnsTrue) {
+    json::Json json_boolean = false;
+    EXPECT_TRUE(json_boolean.isBool());
 }
 
 TEST(JsonBoolean, IfInitialisedWithTrueReturnsTrue) {
-    json::JsonBoolean jsonBoolean(true);
-    EXPECT_TRUE(jsonBoolean.value());
+    json::Json json_boolean = true;
+    EXPECT_TRUE(json_boolean.asBool());
 }
 
 TEST(JsonBoolean, IfInitialisedWithFalseReturnsFalse) {
-    json::JsonBoolean jsonBoolean(false);
-    EXPECT_FALSE(jsonBoolean.value());
+    json::Json json_boolean = false;
+    EXPECT_FALSE(json_boolean.asBool());
 }

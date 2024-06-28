@@ -33,6 +33,8 @@ FetchContent_MakeAvailable(googletest)
 enable_testing()
 
 add_executable(jsonc_tests
+  tests/json_null_tests.cpp
+
   tests/json_token_reader_tests.cpp
   tests/json_array_tests.cpp
   tests/json_boolean_tests.cpp

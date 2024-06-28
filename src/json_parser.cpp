@@ -5,21 +5,9 @@
 
 #include "json_token_reader.h"
 
-#include "json_array.h"
-#include "json_boolean.h"
-#include "json_number.h"
-#include "json_object.h"
-#include "json_string.h"
-#include "json_value.h"
-#include "json_null.h"
+#include "json.h"
 
 namespace {
-
-std::string UnwrapString(const std::string* string_ptr) {
-    std::string result(*string_ptr);
-    delete string_ptr;
-    return std::move(result);
-}
 
 bool IsEscapeCharacter(char c) {
     return (c == '\"') || (c == '\\') || (c == '/') ||
@@ -47,135 +35,120 @@ namespace json {
 
 namespace __internal {
 
-JsonValue* JsonParser::parse(const std::string& raw_json) {
+std::optional<Json> JsonParser::parse(const std::string& raw_json) {
     JsonTokenReader reader(raw_json);
-    JsonValue* value = this->value(reader);
+    const auto& value = this->value(reader);
 
     if (reader.hasNext()) {
-        if (value) {
-            delete value;
-        }
-
-        return nullptr;
+        return std::nullopt;
     }
 
-    return value;
+    return std::move(value);
 }
 
 // objects
-JsonObject* JsonParser::object(JsonTokenReader& reader) {
+std::optional<Json> JsonParser::object(JsonTokenReader& reader) {
     auto token = reader.save();
 
     if (!reader.consume('{')) {
         reader.restore(token);
-        return nullptr;
+        return std::nullopt;
     }
 
-    JsonObject* object = new JsonObject();
+    auto&& object = Json::object();
 
     whitespace(reader);
 
-    std::string* key = raw_string(reader);
-    if (key) {
+    const auto& opt_key = raw_string(reader);
+    if (opt_key) {
         whitespace(reader);
 
         if (!reader.consume(':')) {
-            delete object;
             reader.restore(token);
-            return nullptr;
+            return std::nullopt;
         }
 
-        JsonValue* value = this->value(reader);
-        if (!value) {
-            delete object;
+        auto&& opt_value = this->value(reader);
+        if (!opt_value) {
             reader.restore(token);
-            return nullptr;
+            return std::nullopt;
         }
 
-        // UnwrapString deletes original key pointer.
-        object->put(UnwrapString(key), value);
+        object.put(opt_key.value(), std::move(*opt_value));
 
         while (reader.consume(',')) {
-            std::string* key = raw_string(reader);
-            if (!key) {
-                delete object;
+            const auto& opt_key = raw_string(reader);
+            if (!opt_key) {
                 reader.restore(token);
-                return nullptr;
+                return std::nullopt;
             }
 
             whitespace(reader);
 
             if (!reader.consume(':')) {
-                delete object;
                 reader.restore(token);
-                return nullptr;
+                return std::nullopt;
             }
 
-            JsonValue* value = this->value(reader);
-            if (!value) {
-                delete object;
+            auto&& opt_value = this->value(reader);
+            if (!opt_value) {
                 reader.restore(token);
-                return nullptr;
+                return std::nullopt;
             }
 
-            // UnwrapString deletes original key pointer.
-            object->put(UnwrapString(key), value);
+            object.put(opt_key.value(), std::move(*opt_value));
         }
     }
 
     if (!reader.consume('}')) {
-        delete object;
         reader.restore(token);
-        return nullptr;
+        return std::nullopt;
     }
 
-    return object;
+    return std::optional<Json>(object);
 }
 
-JsonArray* JsonParser::array(JsonTokenReader& reader) {
+std::optional<Json> JsonParser::array(JsonTokenReader& reader) {
     auto token = reader.save();
 
     if (!reader.consume('[')) {
         reader.restore(token);
-        return nullptr;
+        return std::nullopt;
     }
 
-    JsonArray* array = new JsonArray();
-
-    JsonValue* value = this->value(reader);
-    if (value) {
-        array->add(value);
+    auto&& array = Json::array();
+    std::optional<Json> opt_value = this->value(reader);
+    if (opt_value) {
+        array.add(std::move(*opt_value));
 
         while (reader.consume(',')) {
-            value = this->value(reader);
+            opt_value = this->value(reader);
 
-            if (!value) {
-                // No value after coma.
-                delete array;
+            if (!opt_value) {
+                // No opt_value after coma.
                 reader.restore(token);
-                return nullptr;
+                return std::nullopt;
             }
 
-            array->add(value);
+            array.add(std::move(*opt_value));
         }
     }
 
     whitespace(reader);
 
     if (!reader.consume(']')) {
-        delete array;
         reader.restore(token);
-        return nullptr;
+        return std::nullopt;
     }
 
-    return array;
+    return std::optional<Json>(array);
 }
 
 // base
-JsonValue* JsonParser::value(JsonTokenReader& reader) {
+std::optional<Json> JsonParser::value(JsonTokenReader& reader) {
     auto token = reader.save();
 
-    JsonValue* value = nullptr;
+    std::optional<Json> value = std::nullopt;
     whitespace(reader);
 
     value = string(reader);
@@ -204,43 +177,43 @@ JsonValue* JsonParser::value(JsonTokenReader& reader) {
 
     if (!value) {
         reader.restore(token);
-        return nullptr;
+        return std::nullopt;
     }
 
     return value;
 }
 
 // primitives
-JsonNull* JsonParser::null(JsonTokenReader& reader) {
+std::optional<Json> JsonParser::null(JsonTokenReader& reader) {
     auto token = reader.save();
 
     if (reader.consume('n') && reader.consume('u') && reader.consume('l') && reader.consume('l')) {
-        return new JsonNull();
+        return std::optional<Json>(Json::null());
     } else {
         reader.restore(token);
-        return nullptr;
+        return std::nullopt;
     }
 }
 
-JsonBoolean* JsonParser::boolean(JsonTokenReader& reader) {
+std::optional<Json> JsonParser::boolean(JsonTokenReader& reader) {
     auto token = reader.save();
 
     if (reader.consume('t') && reader.consume('r') && reader.consume('u') && reader.consume('e')) {
-        return new JsonBoolean(true);
+        return std::optional<Json>(Json(true));
     } else {
         reader.restore(token);
     }
 
     if (reader.consume('f') && reader.consume('a') && reader.consume('l') && reader.consume('s') && reader.consume('e')) {
-        return new JsonBoolean(false);
+        return std::optional<Json>(Json(false));
     } else {
         reader.restore(token);
     }
 
-    return nullptr;
+    return std::nullopt;
 }
 
-JsonNumber* JsonParser::number(JsonTokenReader& reader) {
+std::optional<Json> JsonParser::number(JsonTokenReader& reader) {
     auto token = reader.save();
 
     std::stringstream sstream;
@@ -262,7 +235,7 @@ JsonNumber* JsonParser::number(JsonTokenReader& reader) {
     } else {
         // Not a decimal.
         reader.restore(token);
-        return nullptr;
+        return std::nullopt;
     }
 
     if (reader.peek() == '.') {
@@ -272,7 +245,7 @@ JsonNumber* JsonParser::number(JsonTokenReader& reader) {
         if (!IsDecimal(reader.peek())) {
             // Not a decimal after fraction.
             reader.restore(token);
-            return nullptr;
+            return std::nullopt;
         }
 
         while (IsDecimal(reader.peek())) {
@@ -291,7 +264,7 @@ JsonNumber* JsonParser::number(JsonTokenReader& reader) {
         if (!IsDecimal(reader.peek())) {
             // Not a decimal after exponent.
             reader.restore(token);
-            return nullptr;
+            return std::nullopt;
         }
 
         while (IsDecimal(reader.peek())) {
@@ -299,27 +272,25 @@ JsonNumber* JsonParser::number(JsonTokenReader& reader) {
         }
     }
 
-    return new JsonNumber(std::stod(sstream.str()));
+    return std::optional<Json>(Json(std::stod(sstream.str())));
 }
 
-JsonString* JsonParser::string(JsonTokenReader& reader) {
-    const std::string* raw_string = this->raw_string(reader);
-    if (!raw_string) {
-        return nullptr;
+std::optional<Json> JsonParser::string(JsonTokenReader& reader) {
+    const auto& opt_string = this->raw_string(reader);
+    if (!opt_string) {
+        return std::nullopt;
     }
 
-    JsonString* json_string = new JsonString(*raw_string);
-    delete raw_string;
-
-    return json_string;
+    Json json(std::move(opt_string.value()));
+    return std::optional<Json>(json);
 }
 
 // misc
-std::string* JsonParser::raw_string(JsonTokenReader& reader) {
+std::optional<std::string> JsonParser::raw_string(JsonTokenReader& reader) {
     auto token = reader.save();
 
     if (!reader.consume('\"')) {
-        return nullptr;
+        return std::nullopt;
     }
 
     std::stringstream sstream;
@@ -333,7 +304,7 @@ std::string* JsonParser::raw_string(JsonTokenReader& reader) {
 
             if (!reader.hasNext()) {
                 reader.restore(token);
-                return nullptr;
+                return std::nullopt;
             }
 
             char control_character = reader.next();
@@ -345,7 +316,7 @@ std::string* JsonParser::raw_string(JsonTokenReader& reader) {
                 for (size_t i = 0; i < 4; i++) {
                     if (!reader.hasNext() || !IsHexaDecimal(reader.peek())) {
                         reader.restore(token);
-                        return nullptr;
+                        return std::nullopt;
                     }
 
                     sstream << reader.next();
@@ -353,17 +324,17 @@ std::string* JsonParser::raw_string(JsonTokenReader& reader) {
             } else if (!IsEscapeCharacter(control_character)) {
                 // Neither a control character nor hexadecimal number.
                 reader.restore(token);
-                return nullptr;
+                return std::nullopt;
             }
         }
     }
 
     if (reader.consume('\"')) {
-        return new std::string(sstream.str());
+        return std::optional<std::string>(sstream.str());
     }
 
     reader.restore(token);
-    return nullptr;
+    return std::nullopt;
 }
 
 void JsonParser::whitespace(JsonTokenReader& reader) {

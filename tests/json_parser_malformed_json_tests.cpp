@@ -1,17 +1,12 @@
 #include <gtest/gtest.h>
 
 #include <string>
+#include <optional>
 #include <utility>
 
 #include "json_parser.h"
 
-#include "json_array.h"
-#include "json_boolean.h"
-#include "json_number.h"
-#include "json_object.h"
-#include "json_string.h"
-#include "json_value.h"
-#include "json_null.h"
+#include "json.h"
 
 class MalformedJsonTestingFixture: public ::testing::TestWithParam<std::string> {
 protected:
@@ -94,24 +89,19 @@ INSTANTIATE_TEST_SUITE_P(
 
 TEST_P(MalformedJsonTestingFixture, MalformedJsonYieldsNull) {
     const auto& json = GetParam();
-    json::JsonValue* value = parser.parse(json);
-    EXPECT_EQ(nullptr, value);
+    const auto& value = parser.parse(json);
+    EXPECT_EQ(std::nullopt, value);
 }
 
 TEST(JsonParser, NullYieldsValidJson) {
     json::__internal::JsonParser parser;
-    json::JsonValue* value = parser.parse("null");
-
-    EXPECT_EQ(json::JsonNull(), *value);
-
-    delete value;
+    const auto& opt_value = parser.parse("null");
+    EXPECT_TRUE((*opt_value).isNull());
+    EXPECT_EQ(json::Json::null(), *opt_value);
 }
 
 TEST(JsonParser, NullWithWhitespacesYieldsValidJson) {
     json::__internal::JsonParser parser;
-    json::JsonValue* value = parser.parse("\t \n    null \r \t \n");
-
-    EXPECT_EQ(json::JsonNull(), *value);
-
-    delete value;
+    const auto& opt_value = parser.parse("\t \n    null \r \t \n");
+    EXPECT_EQ(json::Json::null(), *opt_value);
 }

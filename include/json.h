@@ -270,6 +270,9 @@ class Json {
           return _container.value._array->size() > 0;
         case ValueContainer::kTypeObject:
           return _container.value._object->size() > 0;
+        default:
+          JUNREACHABLE();
+          return false;
       }
     }
 

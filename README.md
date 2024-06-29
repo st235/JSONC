@@ -31,14 +31,59 @@ See more in [`sample`](./sample/)
 
 ## Exploring the API
 
-### Create Json Object
+Everything you may expect is implemented (most likely 😅).
+
+### Types
+
+JSON specification declares 4 types and 3 literals:
+- Literals
+    - `null`
+    - `true`
+    - `false`
+- Types
+    - `number`
+    - `string`
+    - `array`
+    - `object`
+
+All json values are conform to specially defined [`json::Json` type](./include/json.h).
+To check for those literals and types `Json` defines special **boolean methods**:
+
+- `Json#isNull`
+- `Json#isBool`
+- `Json#isNumber`
+- `Json#isString`
+- `Json#isArray`
+- `Json#isObject`
+
+Almost all `is` methods (except `isNull`) has corresponding `as` methods to safely get the content of json file:
+
+- `asBool` -> returns `bool`
+- `asNumber` -> `double`
+- `asString` -> `std::string`
+- `asArray` -> `std::vector<Json>`
+- `asObject` -> `std::unordered_map<std::string, Json>`
+
+### Create `Json` object from `std::string`
 
 ```cpp
 #include "json.h"
 
 ...
 
-const auto& json = json::Json::fromJson(file_context);
+std::string json_text = ...
+const auto& json = json::Json::fromJson(json_text);
+
+...
+```
+
+### Declare `Json` object
+
+```cpp
+json::Json json = { 
+  std::make_pair("a", json::Json({ json::Json(true), json::Json("b") })),
+  std::make_pair("b", json::Json(129.1))
+}
 ```
 
 

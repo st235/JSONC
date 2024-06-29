@@ -3,6 +3,7 @@
 
 #include <optional>
 
+#include "json_assert.h"
 #include "json_definitions.h"
 #include "json_visitor.h"
 
@@ -13,12 +14,12 @@ class Json {
     struct ValueContainer {
       public:
         enum {
+          kTypeNull,
           kTypeBool,
           kTypeNumber,
           kTypeString,
           kTypeArray,
           kTypeObject,
-          kTypeNull,
         } type;
 
         union {
@@ -230,6 +231,9 @@ class Json {
           return *_container.value._array == *that._container.value._array;
         case ValueContainer::kTypeObject:
           return *_container.value._object == *that._container.value._object;
+        default:
+          JUNREACHABLE();
+          return false;
       }
     }
 
@@ -278,59 +282,96 @@ class Json {
     }
 
     inline bool_t asBool() const {
+      JASSERT(isBool());
       return _container.value._bool;
     }
 
     inline number_t asNumber() const {
+      JASSERT(isNumber());
       return _container.value._number;
     }
 
     inline const string_t& asString() const {
+      JASSERT(isString());
       return *_container.value._string;
     }
 
     inline const array_t& asArray() const {
+      JASSERT(isArray());
       return *_container.value._array;
     }
 
     inline const object_t& asObject() const {
+      JASSERT(isObject());
       return *_container.value._object;
     }
 
     const Json& operator[](size_t index) const {
+      JASSERT(isArray());
       return (*_container.value._array)[index];
     }
 
     const Json& operator[](const std::string& key) const {
+      JASSERT(isObject());
       return (*_container.value._object)[key];
     }
 
     Json& operator[](const std::string& key) {
+      JASSERT(isObject());
       return (*_container.value._object)[key];
     }
 
-    void add(const Json& that) {
+    bool add(const Json& that) {
+      if (!isArray()) {
+        JTHROW();
+        return false;
+      }
+
       _container.value._array->push_back(that);
+      return true;
     }
 
-    void add(Json&& that) {
+    bool add(Json&& that) {
+      if (!isArray()) {
+        JTHROW();
+        return false;
+      }
+
       _container.value._array->emplace_back(std::move(that));
+      return true;
     }
 
-    void put(const std::string& key, const Json& json) {
+    bool put(const std::string& key, const Json& json) {
+      if (!isObject()) {
+        JTHROW();
+        return false;
+      }
+
       (*_container.value._object)[key] = json;
+      return true;
     }
 
-    void put(const std::string& key, Json&& json) {
+    bool put(const std::string& key, Json&& json) {
+      if (!isObject()) {
+        JTHROW();
+        return false;
+      }
+
       (*_container.value._object)[key] = std::move(json);
+      return true;
     }
 
     size_t size() const {
+      JASSERT(isArray() || isObject());
+
       switch (_container.type) {
         case ValueContainer::kTypeArray:
           return _container.value._array->size();
         case ValueContainer::kTypeObject:
           return _container.value._object->size();
+        default:
+          JUNREACHABLE();
+          return 0;
       }
     }
 

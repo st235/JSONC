@@ -18,6 +18,11 @@ add_library(jsonc
 
 target_include_directories(jsonc PUBLIC ${CMAKE_CURRENT_LIST_DIR}/include)
 
+if (ASSERT)
+  message("Enabling assertions in the code")
+  add_compile_definitions(ASSERT=${ASSERT})
+endif()
+
 # Test targets
 include(FetchContent)
 

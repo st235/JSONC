@@ -12,8 +12,9 @@ INSTANTIATE_TEST_SUITE_P(
         JsonDumpTests,
         JsonDumpsTestingFixture,
         ::testing::Values(
-            // primitives
-            std::make_pair(json::Json::null(), "null")
+            std::make_pair(json::Json::null(), "null"),
+            std::make_pair(json::Json(2.0), "2"),
+            std::make_pair(json::Json({ json::Json(true), json::Json(5.0), json::Json(static_cast<std::string>("Hello")) }), R"([true,5,"Hello"])")
         )
 );
 

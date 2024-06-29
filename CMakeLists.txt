@@ -3,9 +3,9 @@ cmake_minimum_required(VERSION 3.26)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-project(JSONC VERSION 0.1 DESCRIPTION "Lightweight JSON implementation in C++")
+project(JSONC VERSION 0.2 DESCRIPTION "JSONC is a lightweight implementation of JSON Data Interchange Standard for C++ programming language.")
 
-# Library targets
+# Library targets.
 
 add_library(jsonc
     src/json_parser.h
@@ -25,7 +25,8 @@ if (ASSERT)
   add_compile_definitions(ASSERT=${ASSERT})
 endif()
 
-# Test targets
+# Test targets.
+
 include(FetchContent)
 
 FetchContent_Declare(
@@ -33,22 +34,30 @@ FetchContent_Declare(
   URL https://github.com/google/googletest/archive/03597a01ee50ed33e9dfd640b249b4be3799d395.zip
 )
 
-# For Windows: Prevent overriding the parent project's compiler/linker settings
+# For Windows: Prevent overriding the parent project's compiler/linker settings.
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(googletest)
 
 enable_testing()
 
 add_executable(jsonc_tests
+  # Testing types.
   tests/json_null_tests.cpp
-
-  tests/json_token_reader_tests.cpp
-  tests/json_array_tests.cpp
   tests/json_boolean_tests.cpp
+  tests/json_number_tests.cpp
+  tests/json_string_tests.cpp
+  tests/json_array_tests.cpp
   tests/json_object_tests.cpp
+
+  # Internal types tests.
+  tests/json_token_reader_tests.cpp
   tests/json_parser_malformed_json_tests.cpp
-  tests/json_valid_json_tests.cpp
+
+  # Visitors tests.
   tests/json_beautifier_tests.cpp
+
+  # Integration tests.
+  tests/json_valid_json_tests.cpp
   tests/json_dump_tests.cpp
 )
 

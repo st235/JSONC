@@ -1,7 +1,10 @@
 #ifndef __JSONC_JSON_H__
 #define __JSONC_JSON_H__
 
+#include <initializer_list>
 #include <optional>
+#include <unordered_set>
+#include <utility>
 
 #include "json_assert.h"
 #include "json_definitions.h"
@@ -182,14 +185,26 @@ class Json {
     static std::string toJson(const Json& json);
 
     Json() noexcept: _container() {}
+
     Json(bool_t value) noexcept: _container(value) {}
+
     Json(number_t value) noexcept: _container(value) {}
+
     Json(const string_t& value) noexcept: _container(value) {}
     Json(string_t&& value) noexcept: _container(std::move(value)) {}
+    Json(const char* value) noexcept: _container(std::string(value)) {}
+
     Json(const array_t& value) noexcept: _container(value) {}
     Json(array_t&& value) noexcept: _container(std::move(value)) {}
+    Json(std::initializer_list<Json> init): _container(array_t(init)) {}
+
     Json(const object_t& value) noexcept: _container(value) {}
     Json(object_t&& value) noexcept: _container(std::move(value)) {}
+    Json(std::initializer_list<std::pair<std::string, Json>> init): _container(object_t()) {
+      for (const auto& [key, value]: init) {
+        (*_container.value._object)[key] = value;
+      }
+    }
 
     Json(const Json& that) noexcept:
       _container(that._container) {
@@ -243,6 +258,8 @@ class Json {
 
     explicit operator bool() const {
       switch (_container.type) {
+        case ValueContainer::kTypeNull:
+          return false;
         case ValueContainer::kTypeBool:
           return _container.value._bool != false;
         case ValueContainer::kTypeNumber:
@@ -251,9 +268,11 @@ class Json {
           return _container.value._string->length() > 0;
         case ValueContainer::kTypeArray:
           return _container.value._array->size() > 0;
-        case ValueContainer::kTypeNull:
         case ValueContainer::kTypeObject:
-          return _container.value._object != nullptr;
+          return _container.value._object->size() > 0;
+        default:
+          JUNREACHABLE();
+          return false;
       }
     }
 
@@ -345,6 +364,20 @@ class Json {
 
       const object_t& content_object = *_container.value._object;
       return content_object.find(key) != content_object.end();
+    }
+
+    std::unordered_set<std::string> keys() const {
+      if (!isObject()) {
+        JTHROW();
+        return std::unordered_set<std::string>();
+      }
+
+      std::unordered_set<std::string> keys;
+      for (const auto& [key, _]: (*_container.value._object)) {
+        keys.insert(key);
+      }
+
+      return std::move(keys);
     }
 
     bool add(const Json& that) {

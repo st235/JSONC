@@ -38,7 +38,7 @@ See more in [`sample`](./sample/)
 
 ...
 
-const auto& json_value = json::FromJson(json_string);
+const auto& json = json::Json::fromJson(file_context);
 ```
 
 
@@ -69,9 +69,11 @@ Use these commands to build the project:
 
 ```bash
 mkdir build
-cmake ..
+cmake .. -DASSERT=ON
 make
 ```
+
+`ASSERT=ON` is used to enabled assertions in the codebase. If you're building a release flavour then you may consider to do not specify this setting.
 
 ### Running test
 

@@ -14,12 +14,12 @@ class Json {
     struct ValueContainer {
       public:
         enum {
+          kTypeNull,
           kTypeBool,
           kTypeNumber,
           kTypeString,
           kTypeArray,
           kTypeObject,
-          kTypeNull,
         } type;
 
         union {
@@ -231,6 +231,9 @@ class Json {
           return *_container.value._array == *that._container.value._array;
         case ValueContainer::kTypeObject:
           return *_container.value._object == *that._container.value._object;
+        default:
+          JUNREACHABLE();
+          return false;
       }
     }
 

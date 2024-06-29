@@ -362,6 +362,8 @@ class Json {
     }
 
     size_t size() const {
+      JASSERT(isArray() || isObject());
+
       switch (_container.type) {
         case ValueContainer::kTypeArray:
           return _container.value._array->size();

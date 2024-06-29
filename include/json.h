@@ -306,19 +306,45 @@ class Json {
       return *_container.value._object;
     }
 
-    const Json& operator[](size_t index) const {
+    Json& operator[](size_t index) {
       JASSERT(isArray());
       return (*_container.value._array)[index];
     }
 
-    const Json& operator[](const std::string& key) const {
-      JASSERT(isObject());
-      return (*_container.value._object)[key];
+    const Json& operator[](size_t index) const {
+      if (!isArray()) {
+        JTHROW();
+        return Json::null();
+      }
+      return (*_container.value._array)[index];
     }
 
     Json& operator[](const std::string& key) {
       JASSERT(isObject());
       return (*_container.value._object)[key];
+    }
+
+    const Json& operator[](const std::string& key) const {
+      if (!isObject()) {
+        JTHROW();
+        return Json::null();
+      }
+
+      if (!containsKey(key)) {
+        return Json::null();
+      }
+
+      return (*_container.value._object)[key];
+    }
+
+    bool containsKey(const std::string& key) const {
+      if (!isObject()) {
+        JTHROW();
+        return false;
+      }
+
+      const object_t& content_object = *_container.value._object;
+      return content_object.find(key) != content_object.end();
     }
 
     bool add(const Json& that) {

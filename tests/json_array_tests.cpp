@@ -15,7 +15,7 @@ TEST(JsonArray, InitialisingArrayWithElementsYieldsRightSize) {
     EXPECT_TRUE(array.isArray());
     EXPECT_EQ(3, array.size());
 
-    EXPECT_EQ(json::Json(0.0), array[(size_t)0]);
-    EXPECT_EQ(json::Json(1.0), array[(size_t)1]);
-    EXPECT_EQ(json::Json(2.0), array[(size_t)2]);
+    EXPECT_EQ(json::Json(0.0), array[0]);
+    EXPECT_EQ(json::Json(1.0), array[1]);
+    EXPECT_EQ(json::Json(2.0), array[2]);
 }

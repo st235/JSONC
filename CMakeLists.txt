@@ -16,6 +16,8 @@ add_library(jsonc
     src/json.cpp
 )
 
+set_property(TARGET jsonc PROPERTY COMPILE_WARNING_AS_ERROR ON)
+
 target_include_directories(jsonc PUBLIC ${CMAKE_CURRENT_LIST_DIR}/include)
 
 if (ASSERT)

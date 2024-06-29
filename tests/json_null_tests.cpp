@@ -12,3 +12,7 @@ TEST(JsonNull, JsonNullReturnsIsNull) {
     EXPECT_TRUE(json_null.isNull());
 }
 
+TEST(JsonNull, UnaryOperatorReturnsFalseForAnyNull) {
+    json::Json json_null;
+    EXPECT_FALSE(json_null);
+}

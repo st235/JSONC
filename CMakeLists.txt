@@ -57,12 +57,13 @@ add_executable(jsonc_tests
   tests/json_beautifier_tests.cpp
 
   # Integration tests.
-  tests/json_valid_json_tests.cpp
+  tests/json_end2end_valid_json_tests.cpp
   tests/json_dump_tests.cpp
 )
 
 target_link_libraries(jsonc_tests jsonc)
-target_link_libraries(jsonc_tests GTest::gtest_main)
+# GMock is required to use EXPECT_THAT.
+target_link_libraries(jsonc_tests GTest::gtest_main GTest::gmock_main)
 target_include_directories(jsonc_tests PRIVATE ${CMAKE_CURRENT_LIST_DIR}/src)
 
 include(GoogleTest)

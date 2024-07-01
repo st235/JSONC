@@ -77,6 +77,7 @@ std::optional<Json> JsonParser::object(JsonTokenReader& reader) {
         object.put(opt_key.value(), std::move(*opt_value));
 
         while (reader.consume(',')) {
+            whitespace(reader);
             const auto& opt_key = raw_string(reader);
             if (!opt_key) {
                 reader.restore(token);
@@ -173,12 +174,12 @@ std::optional<Json> JsonParser::value(JsonTokenReader& reader) {
         value = null(reader);
     }
 
-    whitespace(reader);
-
     if (!value) {
         reader.restore(token);
         return std::nullopt;
     }
+
+    whitespace(reader);
 
     return value;
 }

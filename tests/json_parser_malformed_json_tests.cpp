@@ -92,16 +92,3 @@ TEST_P(MalformedJsonTestingFixture, MalformedJsonYieldsNull) {
     const auto& value = parser.parse(json);
     EXPECT_EQ(std::nullopt, value);
 }
-
-TEST(JsonParser, NullYieldsValidJson) {
-    json::__internal::JsonParser parser;
-    const auto& opt_value = parser.parse("null");
-    EXPECT_TRUE((*opt_value).isNull());
-    EXPECT_EQ(json::Json::null(), *opt_value);
-}
-
-TEST(JsonParser, NullWithWhitespacesYieldsValidJson) {
-    json::__internal::JsonParser parser;
-    const auto& opt_value = parser.parse("\t \n    null \r \t \n");
-    EXPECT_EQ(json::Json::null(), *opt_value);
-}

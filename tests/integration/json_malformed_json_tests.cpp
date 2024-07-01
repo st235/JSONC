@@ -4,14 +4,9 @@
 #include <optional>
 #include <utility>
 
-#include "json_parser.h"
-
 #include "json.h"
 
-class MalformedJsonTestingFixture: public ::testing::TestWithParam<std::string> {
-protected:
-    json::__internal::JsonParser parser;
-};
+class MalformedJsonTestingFixture: public ::testing::TestWithParam<std::string> {};
 
 INSTANTIATE_TEST_SUITE_P(
         MalformedJsonTests,
@@ -89,6 +84,6 @@ INSTANTIATE_TEST_SUITE_P(
 
 TEST_P(MalformedJsonTestingFixture, MalformedJsonYieldsNull) {
     const auto& json = GetParam();
-    const auto& value = parser.parse(json);
+    const auto& value = json::Json::fromJson(json);
     EXPECT_EQ(std::nullopt, value);
 }

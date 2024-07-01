@@ -41,24 +41,23 @@ FetchContent_MakeAvailable(googletest)
 enable_testing()
 
 add_executable(jsonc_tests
-  # Testing types.
-  tests/json_null_tests.cpp
-  tests/json_boolean_tests.cpp
-  tests/json_number_tests.cpp
-  tests/json_string_tests.cpp
-  tests/json_array_tests.cpp
-  tests/json_object_tests.cpp
-
-  # Internal types tests.
-  tests/json_token_reader_tests.cpp
-  tests/json_parser_malformed_json_tests.cpp
-
-  # Visitors tests.
-  tests/json_beautifier_tests.cpp
+  # Unit tests.
+  #  Testing types.
+  tests/unit/json_null_tests.cpp
+  tests/unit/json_boolean_tests.cpp
+  tests/unit/json_number_tests.cpp
+  tests/unit/json_string_tests.cpp
+  tests/unit/json_array_tests.cpp
+  tests/unit/json_object_tests.cpp
+  #  Internal types tests.
+  tests/unit/json_token_reader_tests.cpp
 
   # Integration tests.
-  tests/json_end2end_valid_json_tests.cpp
-  tests/json_dump_tests.cpp
+  tests/integration/json_dump_tests.cpp
+  tests/integration/json_malformed_json_tests.cpp
+  tests/integration/json_valid_json_tests.cpp
+  #  Visitors.
+  tests/integration/json_beautifier_tests.cpp
 )
 
 target_link_libraries(jsonc_tests jsonc)

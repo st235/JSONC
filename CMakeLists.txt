@@ -41,6 +41,9 @@ FetchContent_MakeAvailable(googletest)
 enable_testing()
 
 add_executable(jsonc_tests
+  # Utils.
+  tests/integration/test_utils.h
+
   # Unit tests.
   #  Testing types.
   tests/unit/json_null_tests.cpp

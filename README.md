@@ -31,9 +31,53 @@ See more in [`sample`](./sample/)
 
 ## Exploring the API
 
-Everything you may expect is implemented (most likely 😅).
+Almost everything you might expect has been implemented. Take a look at this real-life example:
+
+```cpp
+  if (response.isObject() && response["results"].isArray()) {
+      const auto& results_array = response["results"].asArray();
+
+      for (size_t i = 0; i < results_array.size(); i++) {
+          const auto& raw_character = results_array[i];
+
+          Character c = {
+              uint32_t(raw_character["id"].asNumber()),
+              raw_character["name"].asString(),
+              raw_character["species"].asString(),
+              raw_character["gender"].asString(),
+              raw_character["image"].asString()
+          };
+
+          ...
+      }
+  }
+```
+
+Here are a few more examples of the most common use cases for your reference.
+
+### Create `Json` object from a `string`
+
+```cpp
+std::string json_text = ...
+const auto& json = json::Json::fromJson(json_text);
+```
+
+### Declare `Json` object and dump it to back to `string`
+
+```cpp
+json::Json json = { 
+  std::make_pair("a", json::Json({ json::Json(true), json::Json("b") })),
+  std::make_pair("b", json::Json(129.1))
+};
+
+std::string json_text = json::Json::toString(json);
+```
+
+In this example, the `json object` will be _minified_. If you want to _beautify_ the JSON (i.e., make it human-readable), the library offers a default implementation of `JsonBeautifier`, which you can find in [the samples folder.](./samples/)
 
 ### Types
+
+The following paragraphs provide a deep dive into the implementation details of the library.
 
 JSON specification declares 4 types and 3 literals:
 - Literals
@@ -63,29 +107,6 @@ Almost all `is` methods (except `isNull`) has corresponding `as` methods to safe
 - `asString` -> `std::string`
 - `asArray` -> `std::vector<Json>`
 - `asObject` -> `std::unordered_map<std::string, Json>`
-
-### Create `Json` object from `std::string`
-
-```cpp
-#include "json.h"
-
-...
-
-std::string json_text = ...
-const auto& json = json::Json::fromJson(json_text);
-
-...
-```
-
-### Declare `Json` object
-
-```cpp
-json::Json json = { 
-  std::make_pair("a", json::Json({ json::Json(true), json::Json("b") })),
-  std::make_pair("b", json::Json(129.1))
-}
-```
-
 
 ## Json Grammar Rules
 

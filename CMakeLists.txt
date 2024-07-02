@@ -61,6 +61,7 @@ add_executable(jsonc_tests
   tests/integration/json_valid_json_tests.cpp
   #  Visitors.
   tests/integration/json_beautifier_tests.cpp
+  tests/integration/json_minifier_tests.cpp
 )
 
 target_link_libraries(jsonc_tests jsonc)

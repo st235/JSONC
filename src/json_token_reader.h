@@ -77,6 +77,16 @@ class JsonTokenReader {
         return false;
     }
 
+    bool consumeAll(const std::string& match) {
+        for (size_t i = 0; i < match.length(); i++) {
+            if (!consume(match[i])) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
     char peek() const {
         if (!hasNext()) {
             return TOKEN_EOF;

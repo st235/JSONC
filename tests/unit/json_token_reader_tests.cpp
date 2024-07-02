@@ -50,6 +50,35 @@ TEST(JsonTokenReader, ConsumeReturnsFalseIfReachedEndOfTheStream) {
     EXPECT_FALSE(reader.consume('a'));
 }
 
+TEST(JsonTokenReader, ConsumeAllReturnsTrueIfTheEntirePatternMatched) {
+    json::__internal::JsonTokenReader reader("spatterne");
+
+    reader.next();
+
+    EXPECT_TRUE(reader.consumeAll("pattern"));
+}
+
+TEST(JsonTokenReader, ConsumeAllReturnsFalseIfPatternHasNotMatched) {
+    json::__internal::JsonTokenReader reader("spatterne");
+    reader.next();
+
+    EXPECT_FALSE(reader.consumeAll("abc"));
+}
+
+TEST(JsonTokenReader, ConsumeAllReturnsFalseIfPatternIsPartiallyMatched) {
+    json::__internal::JsonTokenReader reader("spatterne");
+    reader.next();
+
+    EXPECT_FALSE(reader.consumeAll("patbcd"));
+}
+
+TEST(JsonTokenReader, ConsumeAllReturnsFalseIfReachedEndOfTheStream) {
+    json::__internal::JsonTokenReader reader("spat");
+    reader.next();
+
+    EXPECT_FALSE(reader.consumeAll("pattern"));
+}
+
 TEST(JsonTokenReader, SaveAndRestoreReturnsReaderToInitialState) {
     json::__internal::JsonTokenReader reader("really long string");
 

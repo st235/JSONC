@@ -188,7 +188,7 @@ std::optional<Json> JsonParser::value(JsonTokenReader& reader) {
 std::optional<Json> JsonParser::null(JsonTokenReader& reader) {
     auto token = reader.save();
 
-    if (reader.consume('n') && reader.consume('u') && reader.consume('l') && reader.consume('l')) {
+    if (reader.consumeAll("null")) {
         return std::optional<Json>(Json::null());
     } else {
         reader.restore(token);
@@ -199,13 +199,13 @@ std::optional<Json> JsonParser::null(JsonTokenReader& reader) {
 std::optional<Json> JsonParser::boolean(JsonTokenReader& reader) {
     auto token = reader.save();
 
-    if (reader.consume('t') && reader.consume('r') && reader.consume('u') && reader.consume('e')) {
+    if (reader.consumeAll("true")) {
         return std::optional<Json>(Json(true));
     } else {
         reader.restore(token);
     }
 
-    if (reader.consume('f') && reader.consume('a') && reader.consume('l') && reader.consume('s') && reader.consume('e')) {
+    if (reader.consumeAll("false")) {
         return std::optional<Json>(Json(false));
     } else {
         reader.restore(token);

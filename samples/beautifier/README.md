@@ -12,16 +12,12 @@ make
 ## Run
 
 ```bash
-./json-beautifier ../json_example.json
+./json-beautifier ../example.json
 ```
 
 ## Output
 
 You should see something similar to the output below
-
-```bash
-$ ./json-beautifier ../json_example.json
-```
 
 ```json
 [

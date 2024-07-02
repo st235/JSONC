@@ -3,9 +3,9 @@ cmake_minimum_required(VERSION 3.26)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-project(json-beautifier VERSION 1.0 DESCRIPTION "A lightweight implementation of JSON Data Interchance Standard for C++ programming language.")
+project(response-parser VERSION 1.0 DESCRIPTION "Parses JSON responses from Rick And Morty API.")
 
-add_executable(json-beautifier
+add_executable(response-parser
     main.cpp
 )
 
@@ -22,4 +22,4 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(JSONC)
 
-target_link_libraries(json-beautifier jsonc)
+target_link_libraries(response-parser jsonc)

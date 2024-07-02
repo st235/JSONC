@@ -27,7 +27,7 @@ FetchContent_MakeAvailable(JSONC)
 target_link_libraries(your-project-target jsonc)
 ```
 
-See more in [`sample`](./sample/)
+Check out [`samples`](./samples/) for more.
 
 ## Exploring the API
 

@@ -12,72 +12,72 @@ INSTANTIATE_TEST_SUITE_P(
         MalformedJsonTests,
         MalformedJsonTestingFixture,
         ::testing::Values(
-            // empty strings
+            // Empty strings.
             "",
             "\t     \n     ",
             "\r\t\n      \t\t\r\r\n\n",
 
-            // null with typos
+            // Null with typos.
             "nulls",
 
-            // booleans with typos
+            // Booleans with typos.
             "truth",
             "falso",
 
-            // numbers with issues:
-            // leading zero
+            // Numbers with issues:
+            // Leading zero.
             "0111",
             "025.56",
-            // fraction with no digits
+            // Fraction with no digits.
             "111.",
             "52.",
-            // fraction with coma separator
+            // Fraction with coma separator.
             "5,22",
             "1,07",
-            // exponent with no digits
+            // Exponent with no digits.
             "1e",
             "-5e",
             "4E+",
             "1.23E",
             "-8.11e-",
 
-            // strings with issues:
-            // no brackets
+            // Strings with issues:
+            // No brackets.
             "hello world",
-            // no matching closing bracket
+            // No matching closing bracket.
             R"("hello world)",
             R"(hello world")",
-            // disallowed character after control symbol
+            // Disallowed character after control symbol.
             R"("hello \z ")",
             R"(" \a ")",
-            // invalid length of hex number
+            // Invalid length of hex number.
             R"("\u01A")",
             R"("\uF0")",
-            // invalid hex number
+            // Invalid hex number.
             R"("\uXAF1")",
             R"("number is \u1Z11")"
 
-            // arrays with issues:
-            // no closing bracket
+            // Arrays with issues:
+            // No closing bracket.
             "["
-            // no value
+            // No value.
             "[,]"
-            // trailing coma
+            // Trailing coma.
             "[5,]",
             "[true, {}, ]",
 
-            // objects with issues:
-            // no closing bracket
+            // Objects with issues:
+            // No closing bracket.
             "{",
-            // traling coma
+            // Traling coma.
             R"({ "a" : 5, })",
             R"({ "a" : 5, "b": true, })",
 
-            // complex cases:
-            // multiple objects without array brackets
+            // Complex cases:
+            // Multiple objects without array brackets.
             "5, 2, 1, true",
             "{}, {}",
-            // unknown keyword
+            // Unknown keyword.
             R"({ "a" : hello_world })"
         )
 );

@@ -14,7 +14,7 @@ INSTANTIATE_TEST_SUITE_P(
         JsonDumpTests,
         JsonDumpsTestingFixture,
         ::testing::Values(
-            // Primitives.
+            // Primitives and empty objects.
             PrepareTestData<json::Json>(json::Json::null(), { "null" }),
             PrepareTestData<json::Json>(json::Json(2.0), { "2" }),
             PrepareTestData<json::Json>(json::Json(-1.5), { "-1.5" }),
@@ -26,15 +26,29 @@ INSTANTIATE_TEST_SUITE_P(
 
             // Arrays.
             PrepareTestData<json::Json>(json::Json({ json::Json(true), json::Json(5.0), json::Json(static_cast<std::string>("Hello")) }), { R"([true,5,"Hello"])" }),
+            PrepareTestData<json::Json>(json::Json({ json::Json({ json::Json(true) }) }), { R"([[true]])" }),
+            PrepareTestData<json::Json>(json::Json({ json::Json({ json::Json(-1.2), json::Json(false) }), json::Json(true) }), { R"([[-1.2,false],true])" }),
 
             // Objects.
             PrepareTestData<json::Json>(json::Json({ 
+                std::make_pair("a", json::Json({ json::Json(5.23), json::Json("b") })),
+             }), {
+                R"({"a":[5.23,"b"]})"
+            }),
+            PrepareTestData<json::Json>(json::Json({ 
+                std::make_pair("a", json::Json("b")),
+                std::make_pair("b", json::Json("c")),
+             }), {
+                R"({"a":"b","b":"c"})",
+                R"({"b":"c","a":"b"})"
+            }),
+            PrepareTestData<json::Json>(json::Json({ 
                 std::make_pair("a", json::Json(true)),
                 std::make_pair("b", json::Json({ json::Json(0.0), json::Json::null() })),
-             }), { 
+             }), {
                 R"({"a":true,"b":[0,null]})",
                 R"({"b":[0,null],"a":true})"
-              })
+            })
         )
 );
 

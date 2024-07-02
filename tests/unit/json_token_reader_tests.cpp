@@ -29,3 +29,45 @@ TEST(JsonTokenReader, PeekingAtEofReturnsTokenEOF) {
     EXPECT_EQ(json::__internal::JsonTokenReader::TOKEN_EOF, reader.peek());
 }
 
+TEST(JsonTokenReader, ConsumeReturnsTrueIfCharactersHaveMatched) {
+    json::__internal::JsonTokenReader reader("abc");
+    EXPECT_TRUE(reader.consume('a'));
+}
+
+TEST(JsonTokenReader, ConsumeReturnsFalseIfCharactersHaveNotMatched) {
+    json::__internal::JsonTokenReader reader("abc");
+    EXPECT_FALSE(reader.consume('b'));
+}
+
+TEST(JsonTokenReader, ConsumeReturnsFalseIfReachedEndOfTheStream) {
+    json::__internal::JsonTokenReader reader("abc");
+
+    reader.next();
+    reader.next();
+    reader.next();
+
+    EXPECT_FALSE(reader.hasNext());
+    EXPECT_FALSE(reader.consume('a'));
+}
+
+TEST(JsonTokenReader, SaveAndRestoreReturnsReaderToInitialState) {
+    json::__internal::JsonTokenReader reader("really long string");
+
+    reader.next();
+    reader.next();
+
+    EXPECT_EQ('a', reader.peek());
+
+    const auto& token = reader.save();
+
+    reader.next();
+    reader.next();
+    reader.next();
+
+    EXPECT_EQ('y', reader.peek());
+
+    reader.restore(token);
+    EXPECT_EQ('a', reader.peek());
+}
+
+

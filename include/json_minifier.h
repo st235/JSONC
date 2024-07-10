@@ -33,7 +33,7 @@ class JsonMinifier: public JsonVisitor {
     }
 
     inline std::string minifiedJson() const {
-        return std::move(_stream.str());
+        return _stream.str();
     }
 
     std::stringstream _stream;

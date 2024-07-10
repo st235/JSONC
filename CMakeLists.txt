@@ -16,6 +16,12 @@ add_library(jsonc
     src/json.cpp
 )
 
+if(MSVC)
+  target_compile_options(jsonc PRIVATE /W4 /WX)
+else()
+  target_compile_options(jsonc PRIVATE -Wall -Wextra -Wpedantic -Werror)
+endif()
+
 set_property(TARGET jsonc PROPERTY COMPILE_WARNING_AS_ERROR ON)
 
 target_include_directories(jsonc PUBLIC ${CMAKE_CURRENT_LIST_DIR}/include)

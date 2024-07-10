@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.26)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-project(JSONC VERSION 0.9.1 DESCRIPTION "JSONC is a lightweight implementation of JSON Data Interchange Standard for C++ programming language.")
+project(JSONC VERSION 0.9.2 DESCRIPTION "JSONC is a lightweight implementation of JSON Data Interchange Standard for C++ programming language.")
 
 # Library targets.
 
@@ -20,9 +20,9 @@ target_include_directories(jsonc PUBLIC ${CMAKE_CURRENT_LIST_DIR}/include)
 
 #  Enable all possible warnings and treat them as errors.
 if(MSVC)
-  target_compile_options(jsonc PRIVATE /W4 /WX)
+  target_compile_options(jsonc PRIVATE /W4)
 else()
-  target_compile_options(jsonc PRIVATE -Wall -Wextra -Wpedantic -Werror)
+  target_compile_options(jsonc PRIVATE -Wall -Wextra -Wpedantic)
 endif()
 
 set_property(TARGET jsonc PROPERTY COMPILE_WARNING_AS_ERROR ON)

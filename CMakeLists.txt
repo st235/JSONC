@@ -16,6 +16,9 @@ add_library(jsonc
     src/json.cpp
 )
 
+target_include_directories(jsonc PUBLIC ${CMAKE_CURRENT_LIST_DIR}/include)
+
+#  Enable all possible warnings and treat them as errors.
 if(MSVC)
   target_compile_options(jsonc PRIVATE /W4)
 else()
@@ -24,10 +27,9 @@ endif()
 
 set_property(TARGET jsonc PROPERTY COMPILE_WARNING_AS_ERROR ON)
 
-target_include_directories(jsonc PUBLIC ${CMAKE_CURRENT_LIST_DIR}/include)
-
+#  Enable assertions statements in the codebase.
 if (ASSERT)
-  message("Enabling assertions in the code")
+  message("Enabling assertions in the code.")
   add_compile_definitions(ASSERT=${ASSERT})
 endif()
 

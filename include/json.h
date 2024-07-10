@@ -377,7 +377,7 @@ class Json {
         keys.insert(key);
       }
 
-      return std::move(keys);
+      return keys;
     }
 
     bool add(const Json& that) {

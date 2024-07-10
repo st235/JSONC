@@ -45,7 +45,7 @@ class JsonBeautifier: public JsonVisitor {
     }
 
     inline std::string beautifiedJson() const {
-        return std::move(_stream.str());
+        return _stream.str();
     }
 
     uint16_t _depth;

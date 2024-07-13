@@ -3,28 +3,18 @@ cmake_minimum_required(VERSION 3.26)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-project(JSONC VERSION 0.9.2 DESCRIPTION "JSONC is a lightweight implementation of JSON Data Interchange Standard for C++ programming language.")
+project(JSONC VERSION 0.9.3 DESCRIPTION "JSONC is a lightweight implementation of JSON Data Interchange Standard for C++ programming language.")
 
 # Library targets.
 
-add_library(jsonc
-    src/json_parser.h
-    src/json_parser.cpp
-    src/json_token_reader.h
-    src/json_minifier.cpp
-    src/json_beautifier.cpp
-    src/json.cpp
-)
-
-target_include_directories(jsonc PUBLIC ${CMAKE_CURRENT_LIST_DIR}/include)
+add_library(jsonc INTERFACE)
 
 #  Enable all possible warnings and treat them as errors.
 if(MSVC)
-  target_compile_options(jsonc PRIVATE /W4)
+  target_compile_options(jsonc INTERFACE /W4)
 else()
-  target_compile_options(jsonc PRIVATE -Wall -Wextra -Wpedantic)
+  target_compile_options(jsonc INTERFACE -Wall -Wextra -Wpedantic)
 endif()
-
 set_property(TARGET jsonc PROPERTY COMPILE_WARNING_AS_ERROR ON)
 
 #  Enable assertions statements in the codebase.
@@ -32,6 +22,16 @@ if (ASSERT)
   message("Enabling assertions in the code.")
   add_compile_definitions(ASSERT=${ASSERT})
 endif()
+
+target_sources(jsonc INTERFACE
+  src/json_parser.h
+  src/json_parser.cpp
+  src/json_token_reader.h
+  src/json_minifier.cpp
+  src/json_beautifier.cpp
+  src/json.cpp
+)
+target_include_directories(jsonc INTERFACE ${CMAKE_CURRENT_LIST_DIR}/include)
 
 # Test targets.
 
@@ -72,9 +72,9 @@ add_executable(jsonc_tests
   tests/integration/json_minifier_tests.cpp
 )
 
-target_link_libraries(jsonc_tests jsonc)
+target_link_libraries(jsonc_tests PRIVATE jsonc)
 # GMock is required to use EXPECT_THAT.
-target_link_libraries(jsonc_tests GTest::gtest_main GTest::gmock_main)
+target_link_libraries(jsonc_tests PRIVATE GTest::gtest_main GTest::gmock_main)
 target_include_directories(jsonc_tests PRIVATE ${CMAKE_CURRENT_LIST_DIR}/src)
 
 include(GoogleTest)

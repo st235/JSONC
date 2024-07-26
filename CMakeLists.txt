@@ -71,9 +71,10 @@ if (COMPILE_TESTS)
   )
 
   target_link_libraries(jsonc_tests PRIVATE jsonc)
+  target_include_directories(jsonc_tests PRIVATE ${CMAKE_CURRENT_LIST_DIR}/src)
+
   # GMock is required to use EXPECT_THAT.
   target_link_libraries(jsonc_tests PRIVATE GTest::gtest_main GTest::gmock_main)
-  target_include_directories(jsonc_tests PRIVATE ${CMAKE_CURRENT_LIST_DIR}/src)
 
   # Enable all possible warnings and treat them as errors.
   # This check only affects tests builds, as if applied to

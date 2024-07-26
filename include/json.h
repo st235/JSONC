@@ -85,6 +85,9 @@ class Json {
 
         ValueContainer& operator=(const ValueContainer& that) noexcept {
           if (this != &that) {
+            // Delete old value.
+            deleteContainerValue();
+
             type = that.type;
             copyContainerValue(that);
           }
@@ -99,6 +102,9 @@ class Json {
 
         ValueContainer& operator=(ValueContainer&& that) noexcept {
           if (this != &that) {
+            // Delete old value.
+            deleteContainerValue();
+
             type = that.type;
             swapContainerValue(std::move(that));
           }
@@ -107,21 +113,7 @@ class Json {
         }
 
         ~ValueContainer() {
-          switch (type) {
-            case kTypeNull:
-            case kTypeBool:
-            case kTypeNumber:
-              break;
-            case kTypeString:
-              delete value._string;
-              break;
-            case kTypeArray:
-              delete value._array;
-              break;
-            case kTypeObject:
-              delete value._object;
-              break;
-          }
+          deleteContainerValue();
         }
 
       private:
@@ -167,6 +159,24 @@ class Json {
               break;
             case kTypeObject:
               value._object = new object_t(std::move(*that.value._object));
+              break;
+          }
+        }
+
+        void deleteContainerValue() {
+          switch (type) {
+            case kTypeNull:
+            case kTypeBool:
+            case kTypeNumber:
+              break;
+            case kTypeString:
+              delete value._string;
+              break;
+            case kTypeArray:
+              delete value._array;
+              break;
+            case kTypeObject:
+              delete value._object;
               break;
           }
         }

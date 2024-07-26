@@ -135,7 +135,7 @@ Use these commands to build the project:
 
 ```bash
 mkdir build
-cmake .. -DASSERT=ON
+cmake .. -DCOMPILE_TESTS=ON -DASSERT=ON
 make
 ```
 
